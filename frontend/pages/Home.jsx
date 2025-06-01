@@ -1,10 +1,19 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import "../src/index.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { AuthContext } from '../src/AuthContext';
 
 const Home = () => {
+  const { isAuthenticated, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
       <div className="min-h-screen w-full bg-amber-100 m-0 p-0">
         {/* Sticky Navigation Bar */}
@@ -30,9 +39,18 @@ const Home = () => {
       <Link to="/schemes" className="flex items-center hover:text-amber-200 transition font-medium text-base">
         <i className="fas fa-gavel mr-1"></i> Schemes
       </Link>
-      <Link to="/login" className="flex items-center bg-amber-600 text-white px-4 py-1.5 rounded-full hover:bg-amber-700 transition font-medium shadow-md text-base">
-        <i className="fas fa-sign-in-alt mr-1"></i> Login
-      </Link>
+      {isAuthenticated ? (
+        <button
+          onClick={handleLogout}
+          className="flex items-center bg-amber-600 text-white px-4 py-1.5 rounded-full hover:bg-amber-700 transition font-medium shadow-md text-base"
+        >
+          Logout
+        </button>
+      ) : (
+        <Link to="/login" className="flex items-center bg-amber-600 text-white px-4 py-1.5 rounded-full hover:bg-amber-700 transition font-medium shadow-md text-base">
+          <i className="fas fa-sign-in-alt mr-1"></i> Login
+        </Link>
+      )}
     </nav>
   </div>
 </header>

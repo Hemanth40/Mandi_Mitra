@@ -4,9 +4,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/index.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { AuthContext } from '../src/AuthContext';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = React.useContext(AuthContext);
   const [formData, setFormData] = React.useState({
     fullName: '',
     email: '',

@@ -10,26 +10,54 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
-const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/';
-mongoose.connect(mongoURI)
-.then(() => console.log('MongoDB connected successfully'))
-.catch((err) => console.error('MongoDB connection error:', err));
+// Connect to MongoDB
+const mongoURI = 'mongodb://localhost:27017/mandi_mitra';
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB', err);
+});
 
-// Import auth routes
+
+// Import routes
 const authRoutes = require('./routes/auth');
 const commodityRoutes = require('./routes/commodity');
 const weatherRoutes = require('./routes/weather');
+const newsRoutes = require('./routes/news');
+const cropDoctorRoutes = require('./routes/cropDoctor');
+
+// Enable file uploads
+const fileUpload = require('express-fileupload');
+app.use(fileUpload({
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
+  abortOnLimit: true,
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
 
 // Basic route
 app.get('/', (req, res) => {
   res.send('Backend server is running');
 });
 
-// Use auth routes
+// Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/commodity', commodityRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/crop-doctor', cropDoctorRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Something went wrong!',
+    details: err.message 
+  });
+});
 
 // Start server
 app.listen(port, () => {
