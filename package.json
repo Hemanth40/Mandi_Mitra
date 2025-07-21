@@ -1,0 +1,23 @@
+{
+  "name": "mandi_mitra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hemanth40/Mandi_Mitra.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hemanth40/Mandi_Mitra/issues"
+  },
+  "homepage": "https://github.com/Hemanth40/Mandi_Mitra#readme",
+  "dependencies": {
+    "express-fileupload": "^1.5.1"
+  }
+}
