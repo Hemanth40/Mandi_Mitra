@@ -1,7 +1,14 @@
-# Mandi Mitra - Agricultural Assistant Platform
+# 🌾 Mandi Mitra – Agricultural Assistant Platform
 
-## Overview
-Mandi Mitra is a comprehensive agricultural assistance platform designed to help farmers with weather forecasting, market prices, crop disease detection, and agricultural news. The platform provides real-time data and AI-powered insights to improve farming decisions and crop health management.
+> An AI-powered full-stack platform that helps Indian farmers make better farming decisions using real-time weather data, mandi prices, crop disease detection, and agricultural insights.
+
+---
+
+## 🚀 Overview
+Mandi Mitra is a comprehensive agricultural assistance platform designed to support farmers with accurate, location-based information and AI-driven tools.  
+It integrates real-time APIs and AI services to improve crop health, market awareness, and overall farming productivity.
+
+---
 
 ## Project Structure
 ```
@@ -305,15 +312,6 @@ DEBUG=mandi-mitra:* npm run dev
 3. Commit changes
 4. Push to branch
 5. Create Pull Request
-
-## License
-MIT License - See LICENSE file for details
-
-## Support
-For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/your-repo/mandi-mitra/issues)
-- Email: support@mandimitra.com
-- Documentation: [Wiki](https://github.com/your-repo/mandi-mitra/wiki)
 
 ## Roadmap
 - [ ] Weather-based crop recommendations
