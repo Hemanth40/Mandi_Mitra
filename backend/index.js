@@ -21,13 +21,27 @@ app.use(fileUpload({
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mandi_mitra';
+
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('Connected to MongoDB');
+  console.log('Successfully connected to MongoDB');
 }).catch((err) => {
-  console.error('Failed to connect to MongoDB', err);
+  console.error('Initial MongoDB connection error:', err);
+});
+
+// Monitor connection events
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB runtime error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB reconnected');
 });
 
 // Import routes
@@ -52,9 +66,9 @@ app.use('/api/crop-doctor', cropDoctorRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
-    details: err.message 
+    details: err.message
   });
 });
 

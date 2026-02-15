@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '../src/components/Navigation';
+import { API_BASE_URL } from '../src/config';
 
 const WeatherForecast = () => {
   const [weatherData, setWeatherData] = useState(null);
@@ -88,8 +89,8 @@ const WeatherForecast = () => {
   const fetchWeather = async (lat, lon) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/weather/current?lat=${lat}&lon=${lon}`);
-      
+      const response = await fetch(`${API_BASE_URL}/api/weather/current?lat=${lat}&lon=${lon}`);
+
       if (!response.ok) {
         throw new Error(`Failed to fetch weather data: ${response.statusText}`);
       }
@@ -143,7 +144,7 @@ const WeatherForecast = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="relative h-96 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
@@ -212,7 +213,7 @@ const WeatherForecast = () => {
                           {getWeatherIcon(weatherData.current_weather?.weathercode)}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 bg-slate-700/50 rounded-xl">
                           <i className="fas fa-tint text-blue-400 mb-2"></i>
@@ -227,7 +228,7 @@ const WeatherForecast = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-4">Details</h3>
                     <div className="space-y-4">
@@ -236,13 +237,13 @@ const WeatherForecast = () => {
                         <p className="text-sm text-slate-300">Wind Speed</p>
                         <p className="text-xl font-bold text-white">{weatherData.hourly?.windspeed_10m?.[0] ?? 'N/A'} km/h</p>
                       </div>
-                      
+
                       <div className="p-4 bg-slate-700/50 rounded-xl">
                         <i className="fas fa-compass text-blue-400 mb-2"></i>
                         <p className="text-sm text-slate-300">Wind Direction</p>
                         <p className="text-xl font-bold text-white">{weatherData.hourly?.winddirection_10m?.[0] ?? 'N/A'}°</p>
                       </div>
-                      
+
                       <div className="p-4 bg-slate-700/50 rounded-xl">
                         <i className="fas fa-sun text-yellow-400 mb-2"></i>
                         <p className="text-sm text-slate-300">UV Index</p>
@@ -351,7 +352,7 @@ const WeatherForecast = () => {
                       </div>
                     </div>
                     <div className="w-full bg-slate-600 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full transition-all duration-500 ${getUVIndexColor(weatherData.hourly?.uv_index?.[0])}`}
                         style={{ width: `${Math.min(((weatherData.hourly?.uv_index?.[0] || 0) / 11) * 100, 100)}%` }}
                       ></div>

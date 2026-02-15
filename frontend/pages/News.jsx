@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '../src/components/Navigation';
+import { API_BASE_URL } from '../src/config';
 
 const News = () => {
   const [articles, setArticles] = useState([]);
@@ -20,10 +21,10 @@ const News = () => {
   ];
 
   const formatDate = (dateString) => {
-    const options = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -35,7 +36,7 @@ const News = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 48) return 'Yesterday';
@@ -58,9 +59,9 @@ const News = () => {
     const fetchNews = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/news');
+        const response = await fetch(`${API_BASE_URL}/api/news`);
         const data = await response.json();
-        
+
         if (data.status === 'ok') {
           // Add mock categories and enhance data
           const enhancedArticles = data.articles.map((article, index) => ({
@@ -163,12 +164,12 @@ const News = () => {
 
   // Filter articles based on search and category
   const filteredArticles = articles.filter(article => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -183,7 +184,7 @@ const News = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="relative h-96 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600"></div>
@@ -262,8 +263,8 @@ const News = () => {
               <article key={article.id} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700 hover:border-purple-500 transition-all duration-300 hover:shadow-xl">
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={article.urlToImage} 
+                  <img
+                    src={article.urlToImage}
                     alt={article.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
@@ -303,9 +304,9 @@ const News = () => {
                     </div>
                   </div>
 
-                  <a 
-                    href={article.url} 
-                    target="_blank" 
+                  <a
+                    href={article.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center text-purple-400 hover:text-purple-300 font-medium transition"
                   >
@@ -327,21 +328,20 @@ const News = () => {
               >
                 <i className="fas fa-chevron-left"></i>
               </button>
-              
+
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                 <button
                   key={number}
                   onClick={() => paginate(number)}
-                  className={`px-4 py-2 rounded-lg transition ${
-                    currentPage === number
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-slate-700 text-white hover:bg-slate-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition ${currentPage === number
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-700 text-white hover:bg-slate-600'
+                    }`}
                 >
                   {number}
                 </button>
               ))}
-              
+
               <button
                 onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}

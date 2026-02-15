@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navigation from '../src/components/Navigation';
+import { API_BASE_URL } from '../src/config';
 
 const CropDoctor = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -16,7 +17,7 @@ const CropDoctor = () => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('/api/crop-doctor/analyze', {
+      const response = await fetch(`${API_BASE_URL}/api/crop-doctor/analyze`, {
         method: 'POST',
         body: formData
       });
@@ -77,20 +78,20 @@ const CropDoctor = () => {
 
   const formatTreatment = (treatment) => {
     if (!treatment) return 'No treatment information available';
-    
+
     if (typeof treatment === 'string') {
       return treatment.split('\n').map((line, index) => (
         <span key={index} className="block mb-2">{line}</span>
       ));
     }
-    
+
     return treatment;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="relative h-96 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600"></div>
@@ -121,19 +122,18 @@ const CropDoctor = () => {
                 <span className="text-red-300">{error}</span>
               </div>
             )}
-            
-            <div 
-              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
-                previewUrl ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-600 hover:border-emerald-400'
-              }`}
+
+            <div
+              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${previewUrl ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-600 hover:border-emerald-400'
+                }`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
               {previewUrl ? (
                 <div className="space-y-6">
-                  <img 
-                    src={previewUrl} 
-                    alt="Preview" 
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
                     className="max-h-80 mx-auto rounded-xl shadow-lg"
                   />
                   <div className="flex justify-center space-x-4">
@@ -154,9 +154,8 @@ const CropDoctor = () => {
                         }
                       }}
                       disabled={loading}
-                      className={`bg-emerald-600 text-white px-8 py-3 rounded-lg hover:bg-emerald-700 transition ${
-                        loading ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
+                      className={`bg-emerald-600 text-white px-8 py-3 rounded-lg hover:bg-emerald-700 transition ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                     >
                       {loading ? (
                         <>
@@ -206,13 +205,12 @@ const CropDoctor = () => {
           <div className="max-w-4xl mx-auto">
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700">
               <h2 className="text-3xl font-bold text-white mb-6">Analysis Results</h2>
-              
+
               {/* Health Status */}
-              <div className={`p-6 rounded-xl mb-6 ${
-                result.isHealthy 
-                  ? 'bg-green-500/20 border border-green-500/50' 
-                  : 'bg-amber-500/20 border border-amber-500/50'
-              }`}>
+              <div className={`p-6 rounded-xl mb-6 ${result.isHealthy
+                ? 'bg-green-500/20 border border-green-500/50'
+                : 'bg-amber-500/20 border border-amber-500/50'
+                }`}>
                 <div className="flex items-center space-x-4">
                   <div className={`text-4xl ${result.isHealthy ? 'text-green-400' : 'text-amber-400'}`}>
                     {result.isHealthy ? '✅' : '⚠️'}
@@ -222,8 +220,8 @@ const CropDoctor = () => {
                       {result.isHealthy ? 'Healthy' : 'Issues Detected'}
                     </h3>
                     <p className="text-slate-300">
-                      {result.isHealthy 
-                        ? 'Your crop appears to be healthy!' 
+                      {result.isHealthy
+                        ? 'Your crop appears to be healthy!'
                         : 'Potential issues have been identified'}
                     </p>
                   </div>
@@ -258,20 +256,20 @@ const CropDoctor = () => {
                           {disease.probability}%
                         </span>
                       </div>
-                      
+
                       <div className="space-y-4">
                         <div>
                           <h5 className="text-lg font-semibold text-emerald-400 mb-2">Description</h5>
                           <p className="text-slate-300">{disease.description}</p>
                         </div>
-                        
+
                         <div>
                           <h5 className="text-lg font-semibold text-emerald-400 mb-2">Treatment</h5>
                           <div className="text-slate-300 whitespace-pre-wrap">
                             {formatTreatment(disease.treatment)}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center text-sm text-slate-400">
                           <i className="fas fa-info-circle mr-2"></i>
                           Source: {disease.source}
@@ -295,7 +293,7 @@ const CropDoctor = () => {
                   <i className="fas fa-redo mr-2"></i>Analyze Another
                 </button>
                 <button
-                  onClick={() => window.open('/api/crop-doctor/health', '_blank')}
+                  onClick={() => window.open(`${API_BASE_URL}/api/crop-doctor/health`, '_blank')}
                   className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition"
                 >
                   <i className="fas fa-heartbeat mr-2"></i>System Health

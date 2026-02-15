@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navigation from '../src/components/Navigation';
+import { API_BASE_URL } from '../src/config';
 
 const cropEmojis = {
   Tomato: '🍅',
@@ -83,7 +84,7 @@ const MandiPrice = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`/api/commodity/prices?state=${state}`);
+        const response = await axios.get(`${API_BASE_URL}/api/commodity/prices?state=${state}`);
         setPrices(response.data);
         setDistrict(''); // Reset district when state changes
       } catch (err) {
