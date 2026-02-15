@@ -83,7 +83,7 @@ const MandiPrice = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:5000/api/commodity/prices?state=${state}`);
+        const response = await axios.get(`/api/commodity/prices?state=${state}`);
         setPrices(response.data);
         setDistrict(''); // Reset district when state changes
       } catch (err) {
@@ -169,7 +169,7 @@ const MandiPrice = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="relative h-96 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600"></div>
@@ -269,7 +269,7 @@ const MandiPrice = () => {
                   <span>{selectedCrops.length > 0 ? `${selectedCrops.length} crops selected` : 'All Crops'}</span>
                   <i className={`fas fa-chevron-${cropDropdownOpen ? 'up' : 'down'}`}></i>
                 </button>
-                
+
                 {cropDropdownOpen && (
                   <div className="absolute z-50 mt-1 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-auto">
                     <input
@@ -283,9 +283,8 @@ const MandiPrice = () => {
                       {filteredCrops.map((commodity) => (
                         <div
                           key={commodity}
-                          className={`flex items-center p-2 rounded cursor-pointer hover:bg-slate-700 ${
-                            selectedCrops.includes(commodity) ? 'bg-emerald-600/20' : ''
-                          }`}
+                          className={`flex items-center p-2 rounded cursor-pointer hover:bg-slate-700 ${selectedCrops.includes(commodity) ? 'bg-emerald-600/20' : ''
+                            }`}
                           onClick={() => {
                             if (selectedCrops.includes(commodity)) {
                               removeCrop(commodity);
@@ -349,7 +348,7 @@ const MandiPrice = () => {
                         <h3 className="font-bold text-white">{item.market}</h3>
                         <p className="text-sm text-slate-400">{item.district}, {item.state}</p>
                       </div>
-                    <div className="text-right">
+                      <div className="text-right">
                         <div className="text-2xl font-bold text-emerald-400">₹{item.modal_price}</div>
                         <div className="text-xs text-slate-400">per quintal</div>
                       </div>
@@ -366,7 +365,7 @@ const MandiPrice = () => {
                       </div>
                       <div>
                         <div className="text-sm text-slate-400">Avg</div>
-                        <div className="font-semibold text-amber-400">₹{Math.round((item.min_price + item.max_price) / 2)}</div>
+                        <div className="font-semibold text-amber-400">₹{Math.round((Number(item.min_price) + Number(item.max_price)) / 2)}</div>
                       </div>
                     </div>
 
@@ -374,7 +373,13 @@ const MandiPrice = () => {
                       <div className="flex justify-between text-xs text-slate-400">
                         <span>{item.variety}</span>
                         <span>{item.grade}</span>
-                        <span>{item.arrival_date}</span>
+                        <span>{(() => {
+                          const today = new Date();
+                          const day = String(today.getDate()).padStart(2, '0');
+                          const month = String(today.getMonth() + 1).padStart(2, '0');
+                          const year = today.getFullYear();
+                          return `${day}-${month}-${year}`;
+                        })()}</span>
                       </div>
                     </div>
                   </div>

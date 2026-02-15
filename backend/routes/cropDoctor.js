@@ -8,23 +8,23 @@ require('dotenv').config();
 // API Configuration from environment variables
 const API_CONFIG = {
   cropHealth: {
-    url: process.env.CROP_HEALTH_URL || 'https://crop.kindwise.com/api/v1',
-    key: process.env.CROP_HEALTH_API_KEY || 'rIhNXL6roYx3Y98NjGh6UOHTxz6CKFNWdzfuRzR9l5AOT6oxBM',
+    url: process.env.CROP_HEALTH_URL,
+    key: process.env.CROP_HEALTH_API_KEY,
     enabled: !!process.env.CROP_HEALTH_API_KEY
   },
   plantId: {
-    url: process.env.PLANT_ID_URL || 'https://plant.id/api/v3',
-    key: process.env.PLANT_ID_API_KEY || 'obpkjXaOqUvqO4gFYUWOTmVSeVg9hgLwJkbL7MtoayUNZMlut2',
+    url: process.env.PLANT_ID_URL,
+    key: process.env.PLANT_ID_API_KEY,
     enabled: !!process.env.PLANT_ID_API_KEY
   },
   insectId: {
-    url: process.env.INSECT_ID_URL || 'https://insect.kindwise.com/api/v1',
-    key: process.env.INSECT_ID_API_KEY || 'd9sfHJeL3epBTwHUXausMT8eNfKFT5mPlsLrujIi6ZBg0hzGQt',
+    url: process.env.INSECT_ID_URL,
+    key: process.env.INSECT_ID_API_KEY,
     enabled: !!process.env.INSECT_ID_API_KEY
   },
   mushroomId: {
-    url: process.env.MUSHROOM_ID_URL || 'https://mushroom.kindwise.com/api/v1',
-    key: process.env.MUSHROOM_ID_API_KEY || 'hGnlaji8TVRvVgNtbMxsBZjKPOR866okcV6ZitjHC8oEfKUF4u',
+    url: process.env.MUSHROOM_ID_URL,
+    key: process.env.MUSHROOM_ID_API_KEY,
     enabled: !!process.env.MUSHROOM_ID_API_KEY
   }
 };
@@ -62,17 +62,17 @@ async function makeAPIRequest(service, endpoint, data) {
 router.post('/analyze', async (req, res) => {
   try {
     console.log('=== Crop Doctor Analysis Request ===');
-    
+
     if (!req.files || !req.files.image) {
       console.error('No image file provided in request');
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'No image file provided',
         details: 'Please upload an image file with the key "image"'
       });
     }
 
     const imageFile = req.files.image;
-    
+
     // Proper handling for express-fileupload
     console.log('File received:', {
       name: imageFile.name,
@@ -81,14 +81,14 @@ router.post('/analyze', async (req, res) => {
       encoding: imageFile.encoding,
       tempFilePath: imageFile.tempFilePath
     });
-    
+
     // Get the actual file data - express-fileupload puts it in .data
     if (!imageFile.data || !Buffer.isBuffer(imageFile.data)) {
       console.error('Invalid file data format:', {
         hasData: !!imageFile.data,
         isBuffer: imageFile.data ? Buffer.isBuffer(imageFile.data) : false
       });
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid image file - no data received',
         details: 'File upload format issue',
         fileInfo: {
@@ -98,34 +98,34 @@ router.post('/analyze', async (req, res) => {
         }
       });
     }
-    
+
     const fileSize = imageFile.data.length;
     const mimeType = imageFile.mimetype || 'unknown';
-    
+
     // Validate file size
     if (fileSize === 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid image file - empty file',
         details: 'The uploaded file is empty'
       });
     }
-    
+
     if (fileSize > 5 * 1024 * 1024) { // 5MB limit
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Image file too large',
         details: `File size ${Math.round(fileSize / 1024 / 1024 * 100) / 100}MB exceeds 5MB limit`
       });
     }
-    
+
     // Validate image type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
     if (!allowedTypes.includes(mimeType) && mimeType !== 'unknown') {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Invalid image type',
         details: `Please upload JPG, PNG, or WebP images. Received: ${mimeType}`
       });
     }
-    
+
     // Convert to base64
     const base64Image = imageFile.data.toString('base64');
     const type = req.body?.type || 'plant';
@@ -141,17 +141,17 @@ router.post('/analyze', async (req, res) => {
         service = 'cropHealth';
         endpoint = '/health_assessment';
         break;
-      
+
       case 'insect':
         service = 'insectId';
         endpoint = '/identification';
         break;
-      
+
       case 'mushroom':
         service = 'mushroomId';
         endpoint = '/identification';
         break;
-      
+
       default: // plant
         service = 'plantId';
         endpoint = '/health_assessment';
@@ -258,16 +258,16 @@ router.get('/health', (req, res) => {
 function formatAnalysisResult(data, type) {
   console.log('=== Formatting Analysis Result ===');
   console.log('Full API Response:', JSON.stringify(data, null, 2));
-  
+
   // For plant/crop health analysis
   const isHealthy = data.result?.is_healthy?.binary || false;
   const diseaseSuggestions = data.result?.disease?.suggestions || [];
   const classification = data.result?.classification;
-  
+
   console.log('Is Healthy:', isHealthy);
   console.log('Disease Suggestions:', diseaseSuggestions);
   console.log('Classification:', classification);
-  
+
   // Convert disease suggestions to our format
   const diseases = diseaseSuggestions.map(disease => ({
     name: disease.name || 'Unknown Disease',
@@ -277,7 +277,7 @@ function formatAnalysisResult(data, type) {
     source: 'Plant ID AI Analysis',
     similarImages: disease.similar_images || []
   }));
-  
+
   return {
     type: type,
     isHealthy: isHealthy,
@@ -290,13 +290,13 @@ function formatAnalysisResult(data, type) {
 // Helper function to format treatment information
 function formatTreatment(treatment) {
   if (!treatment) return 'No treatment information available';
-  
+
   if (typeof treatment === 'string') return treatment;
-  
+
   if (Array.isArray(treatment)) {
     return treatment.map(t => `• ${t}`).join('\n');
   }
-  
+
   if (typeof treatment === 'object') {
     const sections = [];
     if (treatment.prevention) sections.push(`Prevention:\n${treatment.prevention.map(p => `• ${p}`).join('\n')}`);
@@ -304,7 +304,7 @@ function formatTreatment(treatment) {
     if (treatment.chemical) sections.push(`Chemical:\n${treatment.chemical.map(c => `• ${c}`).join('\n')}`);
     return sections.join('\n\n');
   }
-  
+
   return 'Treatment information available';
 }
 

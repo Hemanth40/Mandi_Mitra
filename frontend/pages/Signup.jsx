@@ -27,7 +27,7 @@ const Signup = () => {
         mobile: formData.mobile,
         password: formData.password,
       };
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-amber-700">
       <ToastContainer />
-      
+
       {/* Navigation */}
       <header className="bg-black/30 backdrop-blur-lg border border-white/20 rounded-full sticky top-4 z-50 mx-auto max-w-6xl shadow-2xl">
         <div className="px-6 py-3 flex justify-between items-center">
