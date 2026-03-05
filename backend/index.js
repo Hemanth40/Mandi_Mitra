@@ -5,6 +5,10 @@ const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 5000;
+app.get("/health", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.status(200).json({ status: "ok" });
+});
 
 // Middleware
 app.use(cors());
