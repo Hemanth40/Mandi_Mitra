@@ -64,11 +64,13 @@ Mandi_Mitra/
 ### Backend
 - **Runtime**: Node.js with Express.js
 - **Database**: MongoDB with Mongoose ODM
+- **Caching**: In-memory caching using node-cache (latency optimized)
 - **Authentication**: JWT tokens
 - **File Upload**: Multer for image processing
 - **AI Services**: Multiple APIs for crop analysis
-- **Weather**: Open-Meteo API
-- **News**: NewsAPI
+- **Weather**: Open-Meteo API (Cached)
+- **News**: NewsAPI (Cached)
+- **Market**: External Commodity API (Cached)
 
 ### Frontend
 - **Framework**: React.js with Vite
