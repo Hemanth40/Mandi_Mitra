@@ -1,19 +1,10 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import "../src/index.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { AuthContext } from '../src/AuthContext';
 import Navigation from '../src/components/Navigation';
 
 const Home = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const features = [
     {
       title: "Real-time Market Prices",
@@ -51,10 +42,10 @@ const Home = () => {
       color: "from-rose-500 to-red-600"
     },
     {
-      title: "Expert Advisory",
-      description: "Get personalized farming advice from agricultural experts and consultants.",
-      icon: "fas fa-user-tie",
-      link: "/advisor",
+      title: "Crop Health Diagnosis",
+      description: "Analyze plant health, identify insect pests, and detect mushroom species with AI.",
+      icon: "fas fa-leaf",
+      link: "/crop-doctor",
       color: "from-cyan-500 to-blue-600"
     }
   ];
@@ -87,18 +78,18 @@ const Home = () => {
     { number: "50K+", label: "Active Farmers", icon: "fas fa-users" },
     { number: "500+", label: "Markets Covered", icon: "fas fa-store" },
     { number: "95%", label: "Accuracy Rate", icon: "fas fa-bullseye" },
-    { number: "24/7", label: "Support Available", icon: "fas fa-clock" }
+    { number: "24/7", label: "Instant Access", icon: "fas fa-clock" }
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-900">
       {/* Modern Navigation */}
       <Navigation />
 
       {/* Hero Section - Modern Design */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-teal-800 to-amber-700"></div>
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950 via-slate-900 to-amber-950"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
         
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
@@ -107,69 +98,60 @@ const Home = () => {
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-          <div className="mb-8">
-            <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-4">
-              🌾 Trusted by 50,000+ Farmers Across India
+          <div className="mb-6">
+            <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-amber-300 text-sm font-medium border border-white/10">
+              🌾 100% Free & Open Agricultural Assistant for Indian Farmers
             </span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
             Empowering India's
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-emerald-400">
               Farmers
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8 leading-relaxed">
-            Advanced AI-powered tools and real-time market data to maximize your agricultural productivity and profits
+          <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto mb-10 leading-relaxed">
+            Advanced AI-powered tools, live commodity prices from 500+ mandis, hyper-local weather alerts, and government schemes at your fingertips.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {!isAuthenticated ? (
-              <>
-                <Link 
-                  to="/signup" 
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                >
-                  Get Started Free
-                </Link>
-                <Link 
-                  to="/login" 
-                  className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full text-lg font-semibold border border-white/30 hover:bg-white/30 transition-all duration-300"
-                >
-                  Sign In
-                </Link>
-              </>
-            ) : (
-              <Link 
-                to="/prices" 
-                className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-              >
-                Explore Dashboard
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
+          <div className="flex flex-wrap gap-4 justify-center items-center">
+            <Link 
+              to="/prices" 
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-emerald-500/25 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2"
+            >
+              <i className="fas fa-chart-line"></i>
+              <span>Live Mandi Prices</span>
+            </Link>
+            <Link 
+              to="/crop-doctor" 
+              className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-orange-500/25 transform hover:scale-105 transition-all duration-300 flex items-center space-x-2"
+            >
+              <i className="fas fa-microscope"></i>
+              <span>AI Crop Doctor</span>
+            </Link>
+            <Link 
+              to="/weather" 
+              className="bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full text-lg font-semibold border border-white/20 hover:bg-white/20 transition-all duration-300 flex items-center space-x-2"
+            >
+              <i className="fas fa-cloud-sun"></i>
+              <span>Weather Forecast</span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white">
+      <section className="py-16 bg-slate-800/60 border-y border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+                <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-2">
                   {stat.number}
                 </div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
-                <i className={`${stat.icon} text-2xl text-emerald-500 mt-4`}></i>
+                <div className="text-slate-300 font-medium">{stat.label}</div>
+                <i className={`${stat.icon} text-2xl text-emerald-400 mt-3`}></i>
               </div>
             ))}
           </div>
@@ -177,32 +159,32 @@ const Home = () => {
       </section>
 
       {/* Features Section - Modern Cards */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Everything You Need to
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600"> Succeed</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400"> Succeed</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive agricultural solutions powered by cutting-edge technology
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+              Comprehensive agricultural tools powered by cutting-edge data and AI
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group">
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                <div className="bg-slate-800/70 border border-slate-700 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
                   <div className={`h-2 bg-gradient-to-r ${feature.color}`}></div>
                   <div className="p-8">
                     <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <i className={`${feature.icon} text-white text-2xl`}></i>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                    <p className="text-gray-600 mb-6 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
+                    <p className="text-slate-300 mb-6 leading-relaxed">{feature.description}</p>
                     <Link 
                       to={feature.link} 
-                      className="inline-flex items-center text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                      className="inline-flex items-center text-emerald-400 font-semibold hover:text-emerald-300 transition-colors"
                     >
                       Explore Now
                       <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
@@ -215,36 +197,36 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section - Modern Design */}
-      <section className="py-20 bg-gradient-to-br from-emerald-50 via-white to-amber-50">
+      {/* Testimonials Section */}
+      <section className="py-20 bg-slate-800/40 border-t border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Farmers</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Farmers Across India</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
               Real stories from farmers who transformed their agricultural practices
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300">
+              <div key={index} className="bg-slate-800 border border-slate-700 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300">
                 <div className="flex items-center mb-6">
                   <img 
                     src={testimonial.image} 
                     alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-emerald-100"
+                    className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-emerald-500/20"
                   />
                   <div>
-                    <h4 className="font-bold text-gray-900 text-lg">{testimonial.name}</h4>
-                    <p className="text-emerald-600 font-medium">{testimonial.role}</p>
-                    <p className="text-gray-500 text-sm">{testimonial.location}</p>
+                    <h4 className="font-bold text-white text-lg">{testimonial.name}</h4>
+                    <p className="text-emerald-400 font-medium">{testimonial.role}</p>
+                    <p className="text-slate-400 text-sm">{testimonial.location}</p>
                   </div>
                 </div>
                 <div className="relative">
-                  <i className="fas fa-quote-left text-emerald-200 text-2xl absolute -top-2 -left-2"></i>
-                  <p className="text-gray-700 italic leading-relaxed pl-4">{testimonial.content}</p>
+                  <i className="fas fa-quote-left text-slate-600 text-2xl absolute -top-2 -left-2"></i>
+                  <p className="text-slate-300 italic leading-relaxed pl-4">{testimonial.content}</p>
                 </div>
               </div>
             ))}
@@ -252,42 +234,32 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section - Modern Design */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600">
+      {/* CTA Section - Direct Access */}
+      <section className="py-20 bg-gradient-to-r from-emerald-800 via-teal-800 to-amber-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Transform Your Farming?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of farmers who are already benefiting from Mandi Mitra's premium features.
+            Get instant access to live market prices, weather updates, and AI disease diagnosis—100% free with no registration required.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!isAuthenticated ? (
-              <>
-                <Link 
-                  to="/signup" 
-                  className="bg-white text-emerald-600 px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                >
-                  Start Free Trial
-                </Link>
-                <Link 
-                  to="/login" 
-                  className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-emerald-600 transition-all duration-300"
-                >
-                  Sign In
-                </Link>
-              </>
-            ) : (
-              <Link 
-                to="/prices" 
-                className="bg-white text-emerald-600 px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-              >
-                Access Dashboard
-              </Link>
-            )}
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link 
+              to="/prices" 
+              className="bg-white text-emerald-800 px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              Check Mandi Prices Now
+            </Link>
+            <Link 
+              to="/schemes" 
+              className="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-emerald-800 transition-all duration-300"
+            >
+              Browse Govt Schemes
+            </Link>
           </div>
         </div>
       </section>
+
 
       {/* Footer - Modern Design */}
       <footer className="bg-gray-900 text-white">

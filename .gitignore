@@ -34,3 +34,7 @@ Thumbs.db
 
 # Temp files
 *.local
+
+# Resume and Interview Docs
+*.pdf
+

@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
 app.get("/health", (req, res) => {
   res.set("Cache-Control", "no-store");
   res.status(200).json({ status: "ok" });
@@ -23,33 +23,7 @@ app.use(fileUpload({
   createParentPath: true
 }));
 
-// Connect to MongoDB
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mandi_mitra';
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Successfully connected to MongoDB');
-}).catch((err) => {
-  console.error('Initial MongoDB connection error:', err);
-});
-
-// Monitor connection events
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB runtime error:', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
-});
-
-mongoose.connection.on('reconnected', () => {
-  console.log('MongoDB reconnected');
-});
-
 // Import routes
-const authRoutes = require('./routes/auth');
 const commodityRoutes = require('./routes/commodity');
 const weatherRoutes = require('./routes/weather');
 const newsRoutes = require('./routes/news');
@@ -61,7 +35,6 @@ app.get('/', (req, res) => {
 });
 
 // Use routes
-app.use('/api/auth', authRoutes);
 app.use('/api/commodity', commodityRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/news', newsRoutes);
@@ -80,3 +53,4 @@ app.use((err, req, res, next) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${port}`);
 });
+

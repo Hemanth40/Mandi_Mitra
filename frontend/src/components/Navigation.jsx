@@ -1,54 +1,44 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const navLinks = [
+    { to: '/', label: 'Home', icon: 'fas fa-home' },
+    { to: '/prices', label: 'Mandi Prices', icon: 'fas fa-chart-line' },
+    { to: '/weather', label: 'Weather', icon: 'fas fa-cloud-sun' },
+    { to: '/crop-doctor', label: 'Crop Doctor', icon: 'fas fa-seedling' },
+    { to: '/news', label: 'Agri News', icon: 'fas fa-newspaper' },
+    { to: '/schemes', label: 'Gov Schemes', icon: 'fas fa-gavel' },
+  ];
 
   return (
-    <header className="bg-black/30 backdrop-blur-lg border border-white/20 rounded-full sticky top-4 z-50 mx-auto max-w-6xl shadow-2xl">
-      <div className="px-6 py-3 flex justify-between items-center">
-        <div className="flex items-center space-x-3">
+    <header className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-full sticky top-4 z-50 mx-auto max-w-6xl shadow-2xl px-4 py-2 my-2">
+      <div className="px-3 py-1 flex justify-between items-center">
+        <Link to="/" className="flex items-center space-x-2 text-white hover:text-amber-300 transition">
           <i className="fas fa-handshake text-amber-400 text-xl"></i>
-          <h1 className="text-lg font-bold text-white">Mandi Mitra</h1>
-        </div>
-        <nav className="flex items-center space-x-4">
-          <Link to="/" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-home mr-1"></i> Home
-          </Link>
-          <Link to="/prices" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-chart-line mr-1"></i> Prices
-          </Link>
-          <Link to="/weather" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-cloud-sun mr-1"></i> Weather
-          </Link>
-          <Link to="/crop-doctor" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-seedling mr-1"></i> Doctor
-          </Link>
-          <Link to="/news" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-newspaper mr-1"></i> News
-          </Link>
-          <Link to="/schemes" className="text-white/80 hover:text-white transition font-medium text-sm">
-            <i className="fas fa-gavel mr-1"></i> Schemes
-          </Link>
-          {isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="bg-amber-500 text-white px-3 py-1.5 rounded-full text-sm hover:bg-amber-600 transition font-medium"
-            >
-              Logout
-            </button>
-          ) : (
-            <Link to="/login" className="bg-amber-500 text-white px-3 py-1.5 rounded-full text-sm hover:bg-amber-600 transition font-medium">
-              Login
-            </Link>
-          )}
+          <h1 className="text-lg font-bold tracking-wide">Mandi Mitra</h1>
+        </Link>
+        <nav className="flex items-center space-x-1 sm:space-x-2">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.to;
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition flex items-center space-x-1 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md'
+                    : 'text-white/80 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <i className={`${link.icon} mr-1`}></i>
+                <span className="hidden md:inline">{link.label}</span>
+                <span className="md:hidden">{link.label.split(' ')[0]}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </header>
@@ -56,3 +46,4 @@ const Navigation = () => {
 };
 
 export default Navigation;
+
