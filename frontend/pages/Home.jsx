@@ -50,35 +50,29 @@ const Home = () => {
     }
   ];
 
-  const testimonials = [
+  const highlights = [
     {
-      name: "Rajesh Kumar",
-      location: "Punjab",
-      role: "Wheat Farmer",
-      content: "Mandi Mitra helped me get 20% better prices for my wheat crop by showing me the best markets to sell in.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+      icon: "fas fa-bolt",
+      title: "Zero Friction Access",
+      description: "No accounts, no passwords, and no subscription barriers. Direct access to all tools instantly."
     },
     {
-      name: "Priya Sharma",
-      location: "Maharashtra",
-      role: "Tomato Grower",
-      content: "The crop doctor feature saved my entire tomato harvest from a fungal infection I didn't even know about.",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+      icon: "fas fa-satellite",
+      title: "Open Data Integrity",
+      description: "Direct real-time integration with National Data Portal (data.gov.in) and Open-Meteo satellites."
     },
     {
-      name: "Amit Patel",
-      location: "Gujarat",
-      role: "Cotton Farmer",
-      content: "The weather forecasts are incredibly accurate and have helped me plan my irrigation perfectly.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      icon: "fas fa-brain",
+      title: "AI Computer Vision",
+      description: "Deep learning models capable of identifying crop diseases, pests, and giving verified remedies."
     }
   ];
 
   const stats = [
-    { number: "50K+", label: "Active Farmers", icon: "fas fa-users" },
-    { number: "500+", label: "Markets Covered", icon: "fas fa-store" },
-    { number: "95%", label: "Accuracy Rate", icon: "fas fa-bullseye" },
-    { number: "24/7", label: "Instant Access", icon: "fas fa-clock" }
+    { number: "500+", label: "Mandis Covered", icon: "fas fa-store" },
+    { number: "36", label: "States & UTs", icon: "fas fa-map-marked-alt" },
+    { number: "Live", label: "Real-time Updates", icon: "fas fa-sync-alt" },
+    { number: "100%", label: "Free & Open Access", icon: "fas fa-unlock" }
   ];
 
   return (
@@ -100,7 +94,7 @@ const Home = () => {
         <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
           <div className="mb-6">
             <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-amber-300 text-sm font-medium border border-white/10">
-              🌾 100% Free & Open Agricultural Assistant for Indian Farmers
+              🌾 Empowering Farmers with Smart Technology
             </span>
           </div>
           
@@ -174,17 +168,17 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group">
-                <div className="bg-slate-800/70 border border-slate-700 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+                <div className="bg-slate-800/70 border border-slate-700 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden h-full flex flex-col">
                   <div className={`h-2 bg-gradient-to-r ${feature.color}`}></div>
-                  <div className="p-8">
+                  <div className="p-8 flex-1 flex flex-col">
                     <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <i className={`${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
-                    <p className="text-slate-300 mb-6 leading-relaxed">{feature.description}</p>
+                    <p className="text-slate-300 mb-6 leading-relaxed flex-1">{feature.description}</p>
                     <Link 
                       to={feature.link} 
-                      className="inline-flex items-center text-emerald-400 font-semibold hover:text-emerald-300 transition-colors"
+                      className="inline-flex items-center text-emerald-400 font-semibold hover:text-emerald-300 transition-colors mt-auto"
                     >
                       Explore Now
                       <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
@@ -197,37 +191,26 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Smart Technology Pillars Section */}
       <section className="py-20 bg-slate-800/40 border-t border-slate-700">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Farmers Across India</span>
+              Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Mandi Mitra</span>
             </h2>
             <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-              Real stories from farmers who transformed their agricultural practices
+              Built with modern technology to deliver instant, dependable agricultural insights
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-slate-800 border border-slate-700 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-center mb-6">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-emerald-500/20"
-                  />
-                  <div>
-                    <h4 className="font-bold text-white text-lg">{testimonial.name}</h4>
-                    <p className="text-emerald-400 font-medium">{testimonial.role}</p>
-                    <p className="text-slate-400 text-sm">{testimonial.location}</p>
-                  </div>
+            {highlights.map((item, index) => (
+              <div key={index} className="bg-slate-800/80 border border-slate-700 rounded-2xl p-8 hover:border-emerald-500/50 transition-all duration-300">
+                <div className="w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400 text-2xl">
+                  <i className={item.icon}></i>
                 </div>
-                <div className="relative">
-                  <i className="fas fa-quote-left text-slate-600 text-2xl absolute -top-2 -left-2"></i>
-                  <p className="text-slate-300 italic leading-relaxed pl-4">{testimonial.content}</p>
-                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-slate-300 leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -260,65 +243,34 @@ const Home = () => {
         </div>
       </section>
 
-
-      {/* Footer - Modern Design */}
-      <footer className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      {/* Footer - Clean 2-Column Design */}
+      <footer className="bg-gray-950 text-white border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <i className="fas fa-handshake text-emerald-400 text-2xl"></i>
-                <h3 className="text-2xl font-bold">Mandi Mitra</h3>
+              <div className="flex items-center space-x-3 mb-4">
+                <i className="fas fa-handshake text-amber-400 text-2xl"></i>
+                <h3 className="text-2xl font-bold tracking-wide">Mandi Mitra</h3>
               </div>
-              <p className="text-gray-400 mb-4">
-                Empowering farmers with technology and data-driven insights for better agricultural outcomes.
+              <p className="text-gray-400 max-w-md mb-6 leading-relaxed">
+                Empowering Indian farmers with real-time market prices, hyper-local weather intelligence, AI crop disease diagnostics, and welfare schemes.
               </p>
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-emerald-400 transition">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-emerald-400 transition">
-                  <i className="fab fa-facebook"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-emerald-400 transition">
-                  <i className="fab fa-linkedin"></i>
-                </a>
-              </div>
             </div>
             
-            <div>
-              <h4 className="font-semibold mb-4">Features</h4>
-              <ul className="space-y-2 text-gray-400">
+            <div className="md:text-right">
+              <h4 className="font-semibold text-lg text-white mb-4">Quick Links</h4>
+              <ul className="flex flex-wrap md:justify-end gap-x-6 gap-y-2 text-gray-400">
                 <li><Link to="/prices" className="hover:text-emerald-400 transition">Market Prices</Link></li>
                 <li><Link to="/weather" className="hover:text-emerald-400 transition">Weather Forecast</Link></li>
-                <li><Link to="/crop-doctor" className="hover:text-emerald-400 transition">Crop Doctor</Link></li>
-                <li><Link to="/news" className="hover:text-emerald-400 transition">Agricultural News</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-emerald-400 transition">Help Center</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">Contact Us</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">Documentation</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">API Reference</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-emerald-400 transition">About Us</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">Careers</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition">Terms of Service</a></li>
+                <li><Link to="/crop-doctor" className="hover:text-emerald-400 transition">AI Crop Doctor</Link></li>
+                <li><Link to="/news" className="hover:text-emerald-400 transition">Agri News</Link></li>
+                <li><Link to="/schemes" className="hover:text-emerald-400 transition">Gov Schemes</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Mandi Mitra. All rights reserved. Built with ❤️ for Indian farmers.</p>
+          <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500 text-sm">
+            <p>&copy; 2026 Mandi Mitra. Built with ❤️ for Indian farmers.</p>
           </div>
         </div>
       </footer>
