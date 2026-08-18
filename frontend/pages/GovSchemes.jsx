@@ -2,19 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '../src/components/Navigation';
 
 const GovSchemes = () => {
-  const [schemes, setSchemes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedScheme, setExpandedScheme] = useState(null);
 
   const categories = [
-    { id: 'all', name: 'All Schemes', icon: '🏛️', color: 'bg-gray-100 text-gray-800' },
-    { id: 'subsidy', name: 'Subsidies', icon: '💰', color: 'bg-green-100 text-green-800' },
-    { id: 'insurance', name: 'Insurance', icon: '🛡️', color: 'bg-blue-100 text-blue-800' },
-    { id: 'infrastructure', name: 'Infrastructure', icon: '🏗️', color: 'bg-orange-100 text-orange-800' },
-    { id: 'technology', name: 'Technology', icon: '🔬', color: 'bg-purple-100 text-purple-800' },
-    { id: 'training', name: 'Training', icon: '🎓', color: 'bg-indigo-100 text-indigo-800' }
+    { id: 'all', name: 'All Schemes', icon: '🏛️' },
+    { id: 'subsidy', name: 'Direct Income & Subsidies', icon: '💰' },
+    { id: 'insurance', name: 'Crop Risk & Insurance', icon: '🛡️' },
+    { id: 'infrastructure', name: 'Farm Infrastructure & Loans', icon: '🏗️' },
+    { id: 'technology', name: 'Soil & Modern Tech', icon: '🔬' },
+    { id: 'training', name: 'Farmer Training & Organic', icon: '🎓' }
   ];
 
   const schemesData = [
@@ -22,435 +21,290 @@ const GovSchemes = () => {
       id: 1,
       name: "PM-Kisan Samman Nidhi",
       shortName: "PM-Kisan",
-      description: "Income support of ₹6,000 per year to all farmer families across the country in three equal installments of ₹2,000 each.",
-      fullDescription: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a central sector scheme launched on 24th February, 2019 to supplement the financial needs of land holding farmers. Under the scheme, financial benefit of ₹6,000/- per year is transferred in three 4-monthly installments of ₹2,000/- directly into the bank accounts of farmers' families.",
+      description: "Direct income support of ₹6,000 per year transferred directly to bank accounts in 3 equal installments of ₹2,000.",
+      fullDescription: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) is a central sector scheme launched to supplement the financial needs of landholding farmers. The benefit is transferred directly via DBT into farmers' Aadhaar-linked bank accounts.",
       category: "subsidy",
-      amount: "₹6,000/year",
-      eligibility: "All landholding farmer families",
-      applicationProcess: "Online through PM-Kisan portal or Common Service Centers",
-      documents: ["Aadhaar Card", "Bank Account Details", "Land Ownership Documents"],
-      deadline: "No deadline - ongoing scheme",
+      amount: "₹6,000 / Year (Direct DBT)",
+      eligibility: "All landholding farmer families across India",
+      applicationProcess: "Online through PM-Kisan portal or nearest Common Service Center (CSC)",
+      documents: ["Aadhaar Card", "Bank Passbook", "Land Ownership Record (Khata/Khesra)"],
+      deadline: "Ongoing - Open Registration",
       url: "https://pmkisan.gov.in/",
-      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
-      benefits: ["Direct cash transfer", "No middlemen", "Digital payment", "All farmers eligible"],
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
+      benefits: ["Direct cash transfer without middlemen", "100% digital transparent payment", "Beneficiary status tracking on mobile"],
       status: "Active"
     },
     {
       id: 2,
       name: "Pradhan Mantri Fasal Bima Yojana",
       shortName: "PMFBY",
-      description: "Comprehensive crop insurance scheme to provide financial support to farmers in case of crop failure due to natural calamities.",
-      fullDescription: "PMFBY provides comprehensive risk insurance for yield losses due to natural calamities, pest attacks and diseases. The scheme covers all food & oilseeds crops and annual commercial/horticultural crops for which past yield data is available. Farmers pay very low premium rates.",
+      description: "Comprehensive risk insurance for crop loss due to drought, floods, hailstorms, pests, and unseasonal rains.",
+      fullDescription: "PMFBY provides comprehensive crop loss protection from pre-sowing to post-harvest stages. Farmers pay minimal premiums (1.5% for Rabi, 2% for Kharif, 5% for commercial crops) with up to 98% government subsidy.",
       category: "insurance",
-      amount: "Premium subsidy up to 98%",
-      eligibility: "All farmers including sharecroppers and tenant farmers",
-      applicationProcess: "Through banks, Common Service Centers, or online portal",
-      documents: ["Aadhaar Card", "Bank Account Details", "Land Documents", "Crop Sowing Certificate"],
-      deadline: "Before crop sowing",
+      amount: "Up to 98% Premium Subsidy",
+      eligibility: "All farmers including tenant farmers and sharecroppers",
+      applicationProcess: "Through local commercial banks, CSCs, or national PMFBY portal",
+      documents: ["Aadhaar Card", "Bank Account", "Land Possession Certificate", "Sowing Declaration"],
+      deadline: "Before announced seasonal cut-off date",
       url: "https://pmfby.gov.in/",
-      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&h=400&fit=crop",
-      benefits: ["Low premium rates", "Comprehensive coverage", "Quick claim settlement", "Digital process"],
+      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&auto=format&fit=crop&q=80",
+      benefits: ["Lowest premium rates in Asia", "Satellite and drone crop damage assessment", "Direct claim settlement to bank"],
       status: "Active"
     },
     {
       id: 3,
       name: "Agriculture Infrastructure Fund",
       shortName: "AIF",
-      description: "Financing facility for creation of post-harvest management infrastructure and community farming assets.",
-      fullDescription: "AIF provides medium to long term debt financing facility for investment in viable projects for post-harvest management infrastructure and community farming assets through interest subvention and credit guarantee.",
+      description: "₹1 Lakh Crore medium-to-long term debt financing for cold chains, warehouses, and post-harvest management units.",
+      fullDescription: "AIF provides interest subvention of 3% per annum up to a limit of ₹2 Crore and credit guarantee coverage under CGTMSE for setting up modern post-harvest agro-infrastructure.",
       category: "infrastructure",
-      amount: "₹1 Lakh Crore Fund",
-      eligibility: "Farmers, FPOs, PACS, Cooperatives, SHGs, Startups",
-      applicationProcess: "Through lending institutions and online portal",
-      documents: ["Project Report", "Land Documents", "KYC Documents", "Bank Account"],
-      deadline: "Ongoing",
+      amount: "3% Interest Subvention (₹2 Cr)",
+      eligibility: "Farmers, FPOs, PACS, SHGs, Agri-Entrepreneurs, Startups",
+      applicationProcess: "Apply online through the AIF National Portal",
+      documents: ["Detailed Project Report (DPR)", "Land Documents", "KYC & PAN", "Bank Details"],
+      deadline: "Scheme active till 2032-33",
       url: "https://agriinfra.dac.gov.in/",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=400&fit=crop",
-      benefits: ["Interest subvention", "Credit guarantee", "Long term loans", "Wide coverage"],
+      image: "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=800&auto=format&fit=crop&q=80",
+      benefits: ["3% interest subvention for 7 years", "Credit guarantee fee paid by government", "Empowers local FPO storage capacity"],
       status: "Active"
     },
     {
       id: 4,
       name: "Soil Health Card Scheme",
       shortName: "SHC",
-      description: "Provides soil health cards to farmers with crop-wise recommendations for nutrients and fertilizers.",
-      fullDescription: "The scheme aims to promote Integrated Nutrient Management through judicious use of chemical fertilizers including secondary and micro nutrients in conjunction with organic manures and bio-fertilizers for improving soil health and its productivity.",
+      description: "Free comprehensive soil nutrient profiling providing crop-specific fertilizer and organic manure dosage recommendations.",
+      fullDescription: "Issues Soil Health Cards every 3 years containing status of 12 parameters (N, P, K, S, Zn, Fe, Cu, Mn, Bo, pH, EC, OC) to prevent fertilizer over-spending and boost soil fertility.",
       category: "technology",
-      amount: "Free soil testing",
-      eligibility: "All farmers",
-      applicationProcess: "Through soil testing labs and online portal",
-      documents: ["Aadhaar Card", "Land Documents", "Application Form"],
-      deadline: "Ongoing",
+      amount: "100% Free Soil Testing",
+      eligibility: "All farmers in all states",
+      applicationProcess: "Sample collection by local village agriculture extension officer or soil lab",
+      documents: ["Aadhaar Card", "Land Khata/Survey Number"],
+      deadline: "Ongoing Cycle",
       url: "https://soilhealth.dac.gov.in/",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop",
-      benefits: ["Free soil testing", "Personalized recommendations", "Improved yields", "Cost savings"],
+      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&auto=format&fit=crop&q=80",
+      benefits: ["Cuts unnecessary fertilizer costs by 15-20%", "Custom recommendations for 12 nutrients", "Improves long-term crop yield"],
       status: "Active"
     },
     {
       id: 5,
-      name: "e-NAM (National Agriculture Market)",
+      name: "National Agriculture Market (e-NAM)",
       shortName: "e-NAM",
-      description: "Online trading platform for agricultural commodities to create unified national market for farmers.",
-      fullDescription: "e-NAM is a pan-India electronic trading portal which networks the existing APMC mandis to create a unified national market for agricultural commodities. It provides real-time price discovery and promotes transparency in trading.",
+      description: "Pan-India electronic trading portal networking APMC mandis to create a unified national market for transparent price discovery.",
+      fullDescription: "e-NAM integrates over 1,300 mandis across 23 states, allowing farmers to showcase produce digitally, receive bids from buyers across India, and receive direct digital payments.",
       category: "technology",
-      amount: "Free registration",
-      eligibility: "All farmers, traders, commission agents",
-      applicationProcess: "Through APMC mandis and online portal",
-      documents: ["Aadhaar Card", "Bank Account", "Trade License", "PAN Card"],
-      deadline: "Ongoing",
+      amount: "Free Trader/Farmer Registration",
+      eligibility: "All farmers and licensed APMC commission agents",
+      applicationProcess: "Register at local e-NAM APMC mandi kiosk or mobile app",
+      documents: ["Aadhaar Card", "Bank Passbook", "Mobile Number"],
+      deadline: "Ongoing Network",
       url: "https://enam.gov.in/",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=400&fit=crop",
-      benefits: ["Better prices", "Transparent trading", "Wider market access", "Real-time information"],
+      image: "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=800&auto=format&fit=crop&q=80",
+      benefits: ["Access to nationwide buyers", "Transparent electronic bidding", "Instant digital payment to bank"],
       status: "Active"
     },
     {
       id: 6,
-      name: "Pradhan Mantri Krishi Sinchayee Yojana",
-      shortName: "PMKSY",
-      description: "Scheme to expand cultivable area under assured irrigation and improve water use efficiency.",
-      fullDescription: "PMKSY aims to enhance physical access of water on farm and expand cultivable area under assured irrigation, improve on-farm water use efficiency, introduce sustainable water conservation practices, and enhance adoption of precision-irrigation technologies.",
-      category: "infrastructure",
-      amount: "Varies by component",
-      eligibility: "Farmers, States, ULBs, FPOs",
-      applicationProcess: "Through state departments and online portal",
-      documents: ["Project Proposal", "Land Documents", "Technical Feasibility Report", "Cost Estimates"],
-      deadline: "Ongoing",
-      url: "https://pmksy.gov.in/",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop",
-      benefits: ["Irrigation expansion", "Water efficiency", "Technology adoption", "Sustainability"],
-      status: "Active"
-    },
-    {
-      id: 7,
-      name: "National Mission on Sustainable Agriculture",
-      shortName: "NMSA",
-      description: "Mission to promote sustainable agriculture practices and climate-resilient farming.",
-      fullDescription: "NMSA aims to transform Indian agriculture into a climate-resilient production system through suitable adaptation and mitigation measures in domains of both crops and animal husbandry.",
-      category: "technology",
-      amount: "Central assistance",
-      eligibility: "Farmers, States, Research Institutions",
-      applicationProcess: "Through state departments",
-      documents: ["Project Proposal", "Technical Details", "Cost Estimates", "Implementation Plan"],
-      deadline: "Ongoing",
-      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
-      benefits: ["Climate resilience", "Sustainability", "Technology adoption", "Capacity building"],
-      status: "Active"
-    },
-    {
-      id: 8,
-      name: "Mission for Integrated Development of Horticulture",
-      shortName: "MIDH",
-      description: "Holistic development of horticulture sector covering fruits, vegetables, and flowers.",
-      fullDescription: "MIDH aims to promote holistic growth of horticulture sector including fruits, vegetables, root & tuber crops, mushrooms, spices, flowers, aromatic plants, coconut, cashew, cocoa and bamboo through area based regionally differentiated strategies.",
+      name: "PM Kusum Solar Pump Scheme",
+      shortName: "PM-KUSUM",
+      description: "Up to 60% subsidy for installing standalone off-grid and grid-connected solar agricultural irrigation pumps.",
+      fullDescription: "Pradhan Mantri Kisan Urja Suraksha evam Utthaan Mahabhiyan (PM-KUSUM) enables farmers to replace expensive diesel pumps with solar pumps and sell surplus solar power back to the electricity grid.",
       category: "subsidy",
-      amount: "50-60% subsidy",
-      eligibility: "Farmers, FPOs, Cooperatives, SHGs",
-      applicationProcess: "Through state horticulture departments",
-      documents: ["Project Report", "Land Documents", "Technical Details", "Cost Estimates"],
-      deadline: "Ongoing",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop",
-      benefits: ["High subsidy rates", "Technology support", "Market linkage", "Capacity building"],
-      status: "Active"
-    },
-    {
-      id: 9,
-      name: "National Food Security Mission",
-      shortName: "NFSM",
-      description: "Mission to increase production of rice, wheat, pulses, and coarse cereals.",
-      fullDescription: "NFSM aims to increase production of rice, wheat, pulses, and coarse cereals through area expansion and productivity enhancement in a sustainable manner.",
-      category: "subsidy",
-      amount: "Input subsidies and support",
-      eligibility: "Farmers in identified districts",
-      applicationProcess: "Through state agriculture departments",
-      documents: ["Farmer Registration", "Land Documents", "Crop Details", "Bank Account"],
-      deadline: "Seasonal",
-      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&h=400&fit=crop",
-      benefits: ["Input subsidies", "Technology support", "Extension services", "Market support"],
-      status: "Active"
-    },
-    {
-      id: 10,
-      name: "Sub-Mission on Agricultural Mechanization",
-      shortName: "SMAM",
-      description: "Promoting farm mechanization among small and marginal farmers.",
-      fullDescription: "SMAM aims to promote farm mechanization among small and marginal farmers through subsidies for purchase of agricultural machinery and equipment.",
-      category: "subsidy",
-      amount: "40-50% subsidy",
-      eligibility: "Small & marginal farmers, FPOs, Cooperatives",
-      applicationProcess: "Through state agriculture departments",
-      documents: ["Farmer Registration", "Quotation", "Bank Details", "Land Documents"],
-      deadline: "Ongoing",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=400&fit=crop",
-      benefits: ["Machinery subsidy", "Technology access", "Time saving", "Productivity enhancement"],
-      status: "Active"
-    },
-    {
-      id: 11,
-      name: "Rashtriya Krishi Vikas Yojana",
-      shortName: "RKVY",
-      description: "State-specific strategies for agriculture development.",
-      fullDescription: "RKVY aims to incentivize states to increase public investment in agriculture and allied sectors through state-specific strategies.",
-      category: "infrastructure",
-      amount: "Central assistance",
-      eligibility: "States and farmers",
-      applicationProcess: "Through state agriculture departments",
-      documents: ["State Plan", "Project Proposal", "Implementation Details"],
-      deadline: "Annual",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=400&fit=crop",
-      benefits: ["State support", "Flexibility", "Comprehensive development", "Innovation"],
-      status: "Active"
-    },
-    {
-      id: 12,
-      name: "Paramparagat Krishi Vikas Yojana",
-      shortName: "PKVY",
-      description: "Promoting organic farming through cluster approach.",
-      fullDescription: "PKVY aims to promote organic farming through adoption of organic village by cluster approach and PGS certification.",
-      category: "technology",
-      amount: "₹50,000/hectare",
-      eligibility: "Farmers groups, FPOs, Cooperatives",
-      applicationProcess: "Through state organic farming departments",
-      documents: ["Group Registration", "Organic Plan", "Land Documents", "PGS Certification"],
-      deadline: "Ongoing",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop",
-      benefits: ["Organic premium", "Health benefits", "Environmental benefits", "Certification support"],
+      amount: "Up to 60% Solar Pump Subsidy",
+      eligibility: "Individual farmers, Water User Associations, Cooperatives",
+      applicationProcess: "Through State Renewable Energy Development Agencies",
+      documents: ["Aadhaar Card", "Land Documents", "Electricity Bill (if applicable)", "Bank Account"],
+      deadline: "Ongoing State Batches",
+      url: "https://pmkusum.mnre.gov.in/",
+      image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80",
+      benefits: ["Zero diesel fuel expenses", "Reliable daytime irrigation power", "Additional income from surplus solar electricity"],
       status: "Active"
     }
   ];
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  // Filter schemes based on search and category
-  const filteredSchemes = schemesData.filter(scheme => {
-    const matchesSearch = searchQuery === '' || 
-      scheme.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      scheme.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      scheme.shortName.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || scheme.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
+  const filteredSchemes = schemesData.filter((s) => {
+    const matchesCategory = selectedCategory === 'all' || s.category === selectedCategory;
+    const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          s.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          s.shortName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
-  const toggleSchemeDetails = (id) => {
-    setExpandedScheme(expandedScheme === id ? null : id);
-  };
-
-  const getCategoryColor = (category) => {
-    const colors = {
-      subsidy: 'bg-green-100 text-green-800 border-green-200',
-      insurance: 'bg-blue-100 text-blue-800 border-blue-200',
-      infrastructure: 'bg-orange-100 text-orange-800 border-orange-200',
-      technology: 'bg-purple-100 text-purple-800 border-purple-200',
-      training: 'bg-indigo-100 text-indigo-800 border-indigo-200'
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800 border-gray-200';
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-[#090d16] text-slate-100 selection:bg-rose-500 selection:text-white">
       <Navigation />
-      
-      {/* Hero Section */}
-      <section className="relative h-96 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600"></div>
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative z-10 text-center px-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Government Schemes</h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Discover and apply for government schemes designed for farmers
+
+      {/* Hero Section with Rural Community Photography */}
+      <section className="relative py-16 px-4 overflow-hidden border-b border-slate-800">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-30"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1589923188900-85dae523342b?w=1600&auto=format&fit=crop&q=80')`
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-[#090d16]/85 to-[#090d16]/60"></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <span className="inline-flex items-center space-x-2 px-3.5 py-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold rounded-full mb-4">
+            <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping"></span>
+            <span>🏛️ Central & State Government Welfare Directory</span>
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            Government Schemes & Subsidies for Farmers
+          </h1>
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Verified information on financial assistance, crop insurance, solar pumps, and low-interest infrastructure loans with document checklists and direct application links.
           </p>
-          <div className="mt-6 flex justify-center space-x-4">
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <span className="text-white text-sm">🏛️ {schemesData.length} Active Schemes</span>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <span className="text-white text-sm">💰 ₹10L+ Crore Allocated</span>
-            </div>
+
+          {/* Search Input */}
+          <div className="max-w-xl mx-auto relative">
+            <i className="fas fa-search absolute left-4 top-3.5 text-slate-400"></i>
+            <input
+              type="text"
+              placeholder="Search scheme (PM-Kisan, Fasal Bima, Solar Pump, AIF...)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm shadow-2xl"
+            />
           </div>
         </div>
       </section>
 
-      {/* Search and Filter Section */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Search */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Search Schemes</label>
-                <input
-                  type="text"
-                  placeholder="Search schemes, benefits, eligibility..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-emerald-500"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id} className="bg-slate-700">
-                      {cat.icon} {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
+      {/* Category Pills Bar */}
+      <section className="py-6 px-4 max-w-7xl mx-auto">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 border ${
+                selectedCategory === cat.id
+                  ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-500/20'
+                  : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-800'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.name}</span>
+            </button>
+          ))}
         </div>
       </section>
 
       {/* Schemes Grid */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-            </div>
-          )}
+      <section className="py-8 px-4 max-w-7xl mx-auto">
+        {filteredSchemes.length === 0 ? (
+          <div className="text-center py-20 bg-slate-900/60 rounded-3xl border border-slate-800 max-w-md mx-auto">
+            <i className="fas fa-search text-slate-500 text-3xl mb-3"></i>
+            <h3 className="text-lg font-bold text-white mb-1">No Schemes Found</h3>
+            <p className="text-slate-400 text-xs">Try clearing your search query or selecting "All Schemes".</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSchemes.map((sc) => {
+              const isExpanded = expandedScheme === sc.id;
 
-          {!loading && filteredSchemes.length === 0 && (
-            <div className="text-center py-20">
-              <i className="fas fa-search text-slate-400 text-4xl mb-4"></i>
-              <p className="text-slate-400 text-xl">No schemes found for your search</p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredSchemes.map((scheme) => (
-              <div key={scheme.id} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700 hover:border-emerald-500 transition-all duration-300 hover:shadow-xl">
-                {/* Image */}
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={scheme.image} 
-                    alt={scheme.name}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(scheme.category)}`}>
-                      {categories.find(c => c.id === scheme.category)?.name}
-                    </span>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      scheme.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {scheme.status}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2">{scheme.name}</h3>
-                  <p className="text-sm text-emerald-400 font-semibold mb-2">{scheme.amount}</p>
-                  <p className="text-slate-300 mb-4 line-clamp-2">{scheme.description}</p>
-
-                  {/* Key Info */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-slate-400">
-                      <i className="fas fa-users mr-2"></i>
-                      <span>{scheme.eligibility}</span>
+              return (
+                <div
+                  key={sc.id}
+                  className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden hover:border-rose-500/40 transition-all duration-300 flex flex-col justify-between group shadow-xl"
+                >
+                  {/* Card Thumbnail Photography */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={sc.image} 
+                      alt={sc.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    
+                    <div className="absolute top-3 left-3">
+                      <span className="px-3 py-1 bg-slate-900/90 backdrop-blur-md rounded-full text-xs font-bold text-rose-300 border border-rose-500/30">
+                        {sc.shortName}
+                      </span>
                     </div>
-                    <div className="flex items-center text-sm text-slate-400">
-                      <i className="fas fa-calendar mr-2"></i>
-                      <span>{scheme.deadline}</span>
+
+                    <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+                      <span className="text-xs font-extrabold text-emerald-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                        {sc.amount}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Expand/Collapse Details */}
-                  <button
-                    onClick={() => toggleSchemeDetails(scheme.id)}
-                    className="w-full bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium mb-4"
-                  >
-                    {expandedScheme === scheme.id ? 'Hide Details' : 'View Details'}
-                  </button>
+                  {/* Card Body */}
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2 leading-tight">{sc.name}</h3>
+                      <p className="text-slate-300 text-xs leading-relaxed mb-4">{sc.description}</p>
 
-                  {/* Expanded Details */}
-                  {expandedScheme === scheme.id && (
-                    <div className="border-t border-slate-600 pt-4 space-y-4">
-                      <div>
-                        <h4 className="text-white font-semibold mb-2">Full Description</h4>
-                        <p className="text-slate-300 text-sm">{scheme.fullDescription}</p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-white font-semibold mb-2">Benefits</h4>
-                        <ul className="text-slate-300 text-sm space-y-1">
-                          {scheme.benefits.map((benefit, idx) => (
-                            <li key={idx} className="flex items-center">
-                              <i className="fas fa-check text-emerald-400 mr-2"></i>
-                              {benefit}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h4 className="text-white font-semibold mb-2">Required Documents</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {scheme.documents.map((doc, idx) => (
-                            <span key={idx} className="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs">
-                              {doc}
-                            </span>
-                          ))}
+                      <div className="bg-slate-950/80 rounded-xl p-3 border border-slate-800 space-y-1.5 text-xs text-slate-400 mb-4">
+                        <div className="flex items-center space-x-2">
+                          <i className="fas fa-users text-rose-400"></i>
+                          <span>Eligibility: <b className="text-slate-200">{sc.eligibility}</b></span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <i className="fas fa-calendar text-amber-400"></i>
+                          <span>Deadline: <b className="text-slate-200">{sc.deadline}</b></span>
                         </div>
                       </div>
-
-                      <div className="flex space-x-2">
-                        <a
-                          href={scheme.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition text-center text-sm font-medium"
-                        >
-                          Apply Now
-                        </a>
-                        <button className="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-600 transition text-sm">
-                          <i className="fas fa-share-alt"></i>
-                        </button>
-                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="py-12 px-4 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-400">{filteredSchemes.length}</div>
-              <div className="text-slate-400">Available Schemes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400">{categories.length - 1}</div>
-              <div className="text-slate-400">Categories</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400">₹10L+</div>
-              <div className="text-slate-400">Crore Allocated</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-amber-400">Live</div>
-              <div className="text-slate-400">Updates</div>
-            </div>
+                    {/* Expandable Details Drawer */}
+                    {isExpanded && (
+                      <div className="pt-4 border-t border-slate-800 space-y-4 text-xs animate-fadeIn mb-4">
+                        <div>
+                          <h4 className="font-bold text-slate-200 uppercase tracking-wider text-[10px] mb-1">Detailed Overview:</h4>
+                          <p className="text-slate-300 leading-relaxed">{sc.fullDescription}</p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-bold text-emerald-400 uppercase tracking-wider text-[10px] mb-1.5">Key Farmer Benefits:</h4>
+                          <ul className="space-y-1">
+                            {sc.benefits.map((b, bi) => (
+                              <li key={bi} className="flex items-center space-x-1.5 text-slate-300">
+                                <i className="fas fa-check text-emerald-400 text-[10px]"></i>
+                                <span>{b}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="font-bold text-slate-200 uppercase tracking-wider text-[10px] mb-1.5">Required Documents:</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {sc.documents.map((d, di) => (
+                              <span key={di} className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[11px] border border-slate-700">
+                                📄 {d}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        onClick={() => setExpandedScheme(isExpanded ? null : sc.id)}
+                        className="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 py-2.5 rounded-xl text-xs font-semibold transition"
+                      >
+                        {isExpanded ? 'Hide Checklist' : 'View Requirements'}
+                      </button>
+
+                      <a
+                        href={sc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-md"
+                      >
+                        <span>Apply Portal</span>
+                        <i className="fas fa-external-link-alt text-[10px]"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
+        )}
       </section>
     </div>
   );

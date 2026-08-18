@@ -13,26 +13,23 @@ const News = () => {
 
   const categories = [
     { id: 'all', name: 'All News', icon: '📰' },
-    { id: 'agriculture', name: 'Agriculture', icon: '🌾' },
-    { id: 'weather', name: 'Weather', icon: '🌤️' },
-    { id: 'markets', name: 'Markets', icon: '📊' },
-    { id: 'technology', name: 'Technology', icon: '🔬' },
-    { id: 'policy', name: 'Policy', icon: '📋' }
+    { id: 'agriculture', name: 'Crop & Sowing', icon: '🌾' },
+    { id: 'weather', name: 'Monsoon & Climate', icon: '🌤️' },
+    { id: 'markets', name: 'Mandi Rates & MSP', icon: '📊' },
+    { id: 'technology', name: 'Agri-Tech & Drones', icon: '🔬' },
+    { id: 'policy', name: 'Government Policy', icon: '📋' }
   ];
 
-  const formatDate = (dateString) => {
-    const options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
+  const defaultNewsImages = [
+    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800&auto=format&fit=crop&q=80"
+  ];
 
   const formatRelativeTime = (dateString) => {
+    if (!dateString) return 'Today';
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
@@ -43,18 +40,6 @@ const News = () => {
     return `${Math.floor(diffInHours / 24)}d ago`;
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      agriculture: 'bg-green-100 text-green-800',
-      weather: 'bg-blue-100 text-blue-800',
-      markets: 'bg-amber-100 text-amber-800',
-      technology: 'bg-purple-100 text-purple-800',
-      policy: 'bg-red-100 text-red-800',
-      general: 'bg-gray-100 text-gray-800'
-    };
-    return colors[category] || colors.general;
-  };
-
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -62,98 +47,53 @@ const News = () => {
         const response = await fetch(`${API_BASE_URL}/api/news`);
         const data = await response.json();
 
-        if (data.status === 'ok') {
-          // Add mock categories and enhance data
-          const enhancedArticles = data.articles.map((article, index) => ({
-            ...article,
-            id: index + 1,
-            category: categories[Math.floor(Math.random() * (categories.length - 1)) + 1].id,
-            readTime: Math.floor(Math.random() * 5) + 2,
-            likes: Math.floor(Math.random() * 1000) + 50,
-            shares: Math.floor(Math.random() * 500) + 20
+        if (data.status === 'ok' && Array.isArray(data.articles)) {
+          const enhanced = data.articles.map((art, idx) => ({
+            ...art,
+            id: idx + 1,
+            category: categories[(idx % (categories.length - 1)) + 1].id,
+            readTime: (idx % 3) + 3,
+            urlToImage: art.urlToImage || defaultNewsImages[idx % defaultNewsImages.length]
           }));
-          setArticles(enhancedArticles);
+          setArticles(enhanced);
         } else {
-          // Mock data for demonstration
-          const mockArticles = [
+          // Fallback mock news articles
+          setArticles([
             {
               id: 1,
-              title: "Government Announces New MSP Hike for Wheat and Rice",
-              description: "The central government has increased the Minimum Support Price for wheat by ₹150 per quintal and rice by ₹125 per quintal for the upcoming Rabi season.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
+              title: "Government Hikes MSP for Kharif & Rabi Crops to Boost Farm Incomes",
+              description: "The Cabinet Committee on Economic Affairs has approved increased Minimum Support Prices for major agricultural commodities including wheat, pulses, and oilseeds.",
+              url: "https://pib.gov.in/",
+              urlToImage: defaultNewsImages[0],
               publishedAt: new Date().toISOString(),
               category: "policy",
-              readTime: 3,
-              likes: 1250,
-              shares: 340
+              readTime: 3
             },
             {
               id: 2,
-              title: "Monsoon Arrives Early in Northern India, Boosting Crop Prospects",
-              description: "Early monsoon arrival brings relief to farmers across northern states, with rainfall 15% above normal in key agricultural regions.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&h=400&fit=crop",
-              publishedAt: new Date(Date.now() - 3600000).toISOString(),
+              title: "Favorable Monsoon Distribution Accelerates Sowing Across Northern & Central States",
+              description: "IMD reports widespread rainfall across major river basins, accelerating paddy transplanting and pulses acreage by 8% year-on-year.",
+              url: "https://pib.gov.in/",
+              urlToImage: defaultNewsImages[1],
+              publishedAt: new Date(Date.now() - 7200000).toISOString(),
               category: "weather",
-              readTime: 4,
-              likes: 890,
-              shares: 210
+              readTime: 4
             },
             {
               id: 3,
-              title: "Revolutionary Drone Technology Transforms Crop Monitoring",
-              description: "New AI-powered agricultural drones are helping farmers monitor crop health, detect diseases early, and optimize irrigation schedules.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=400&fit=crop",
-              publishedAt: new Date(Date.now() - 7200000).toISOString(),
-              category: "technology",
-              readTime: 5,
-              likes: 2100,
-              shares: 560
-            },
-            {
-              id: 4,
-              title: "Tomato Prices Surge 40% Due to Supply Chain Disruptions",
-              description: "Market analysis reveals significant price increases in tomato markets across major cities, attributed to transportation challenges and reduced supply.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=800&h=400&fit=crop",
-              publishedAt: new Date(Date.now() - 10800000).toISOString(),
-              category: "markets",
-              readTime: 3,
-              likes: 670,
-              shares: 180
-            },
-            {
-              id: 5,
-              title: "Organic Farming Certification Process Simplified for Small Farmers",
-              description: "New government initiative streamlines organic certification process, making it more accessible and affordable for small and marginal farmers.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
-              publishedAt: new Date(Date.now() - 14400000).toISOString(),
-              category: "agriculture",
-              readTime: 4,
-              likes: 1560,
-              shares: 420
-            },
-            {
-              id: 6,
-              title: "Climate-Resistant Crop Varieties Show Promising Results",
-              description: "Scientists develop new wheat and rice varieties that can withstand extreme weather conditions, potentially securing food production against climate change.",
-              url: "#",
-              urlToImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=400&fit=crop",
+              title: "Kisan Drones for Precision Pesticide Spraying Witness Surge in Adoption",
+              description: "Subsidies under the Sub-Mission on Agricultural Mechanization (SMAM) enable FPOs to deploy automated drone spraying, cutting chemical wastage by 40%.",
+              url: "https://pib.gov.in/",
+              urlToImage: defaultNewsImages[2],
               publishedAt: new Date(Date.now() - 18000000).toISOString(),
-              category: "agriculture",
-              readTime: 6,
-              likes: 980,
-              shares: 290
+              category: "technology",
+              readTime: 3
             }
-          ];
-          setArticles(mockArticles);
+          ]);
         }
       } catch (err) {
         console.error('News fetch error:', err);
-        setError('Failed to load news articles');
+        setError('Failed to fetch agricultural news feed.');
       } finally {
         setLoading(false);
       }
@@ -162,220 +102,204 @@ const News = () => {
     fetchNews();
   }, []);
 
-  // Filter articles based on search and category
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = searchQuery === '' ||
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-
-    return matchesSearch && matchesCategory;
+  const filteredArticles = articles.filter((art) => {
+    const matchesCat = selectedCategory === 'all' || art.category === selectedCategory;
+    const matchesSearch = (art.title && art.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (art.description && art.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCat && matchesSearch;
   });
 
-  // Pagination
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = filteredArticles.slice(indexOfFirstArticle, indexOfLastArticle);
   const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-[#090d16] text-slate-100 selection:bg-purple-500 selection:text-white">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative h-96 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600"></div>
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative z-10 text-center px-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Agricultural News</h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Latest updates, insights, and developments in agriculture
+      {/* Hero Section with High-Res Photography */}
+      <section className="relative py-16 px-4 overflow-hidden border-b border-slate-800">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-30"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=1600&auto=format&fit=crop&q=80')`
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-[#090d16]/85 to-[#090d16]/60"></div>
+        
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <span className="inline-flex items-center space-x-2 px-3.5 py-1.5 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold rounded-full mb-4">
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+            <span>📰 National Agricultural News & Insights</span>
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            Agricultural News & Market Insights
+          </h1>
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+            Curated daily updates on MSP decisions, weather patterns, Agri-Tech innovations, and rural farming policies.
           </p>
-        </div>
-      </section>
 
-      {/* Search and Filter Section */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700 mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Search */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Search News</label>
-                <input
-                  type="text"
-                  placeholder="Search articles, topics, keywords..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-purple-500"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id} className="bg-slate-700">
-                      {cat.icon} {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+          {/* Search Input */}
+          <div className="max-w-xl mx-auto relative">
+            <i className="fas fa-search absolute left-4 top-3.5 text-slate-400"></i>
+            <input
+              type="text"
+              placeholder="Search news topics, policy, MSP, monsoon..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full bg-slate-900/90 backdrop-blur-xl border border-slate-700 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm shadow-2xl"
+            />
           </div>
         </div>
       </section>
 
-      {/* News Content */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-            </div>
-          )}
+      {/* Category Filter Pills */}
+      <section className="py-6 px-4 max-w-7xl mx-auto">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 border ${
+                selectedCategory === cat.id
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-500/20'
+                  : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-800'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.name}</span>
+            </button>
+          ))}
+        </div>
+      </section>
 
-          {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-6 text-center">
-              <i className="fas fa-exclamation-triangle text-red-400 text-2xl mb-2"></i>
-              <p className="text-red-300">{error}</p>
-            </div>
-          )}
+      {/* News Articles Grid */}
+      <section className="py-8 px-4 max-w-7xl mx-auto">
+        {loading && (
+          <div className="text-center py-24 bg-slate-900/60 rounded-3xl border border-slate-800">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mb-4"></div>
+            <p className="text-slate-300 text-lg font-medium">Aggregating live agricultural news feeds...</p>
+          </div>
+        )}
 
-          {!loading && !error && currentArticles.length === 0 && (
-            <div className="text-center py-20">
-              <i className="fas fa-search text-slate-400 text-4xl mb-4"></i>
-              <p className="text-slate-400 text-xl">No articles found for your search</p>
-            </div>
-          )}
+        {!loading && filteredArticles.length === 0 && (
+          <div className="text-center py-20 bg-slate-900/60 rounded-3xl border border-slate-800 max-w-md mx-auto">
+            <i className="fas fa-newspaper text-slate-500 text-3xl mb-3"></i>
+            <h3 className="text-lg font-bold text-white mb-1">No News Articles Found</h3>
+            <p className="text-slate-400 text-xs">Try clearing your search query or selecting "All News".</p>
+          </div>
+        )}
 
-          {/* News Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {currentArticles.map((article) => (
-              <article key={article.id} className="bg-slate-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700 hover:border-purple-500 transition-all duration-300 hover:shadow-xl">
-                {/* Image */}
+        {!loading && currentArticles.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentArticles.map((art) => (
+              <article
+                key={art.id}
+                className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden hover:border-purple-500/40 transition-all duration-300 flex flex-col justify-between group shadow-xl"
+              >
+                {/* Article Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={article.urlToImage}
-                    alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    src={art.urlToImage}
+                    alt={art.title}
+                    onError={(e) => {
+                      e.target.src = defaultNewsImages[0];
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute top-4 left-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(article.category)}`}>
-                      {categories.find(c => c.id === article.category)?.name}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent"></div>
+
+                  <div className="absolute top-3 left-3">
+                    <span className="px-3 py-1 bg-slate-900/90 backdrop-blur-md rounded-full text-xs font-bold text-purple-300 border border-purple-500/30">
+                      {categories.find(c => c.id === art.category)?.name || 'Agriculture'}
                     </span>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between text-sm text-slate-400 mb-3">
-                    <span>{formatRelativeTime(article.publishedAt)}</span>
-                    <span>{article.readTime} min read</span>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 hover:text-purple-300 transition">
-                    {article.title}
-                  </h3>
-
-                  <p className="text-slate-300 mb-4 line-clamp-3">
-                    {article.description}
-                  </p>
-
-                  {/* Stats */}
-                  <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
-                    <div className="flex items-center space-x-4">
-                      <span className="flex items-center space-x-1">
-                        <i className="fas fa-heart text-red-400"></i>
-                        <span>{article.likes}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <i className="fas fa-share text-blue-400"></i>
-                        <span>{article.shares}</span>
-                      </span>
+                {/* Article Content */}
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
+                      <span>📅 {formatRelativeTime(art.publishedAt)}</span>
+                      <span>⏱️ {art.readTime} min read</span>
                     </div>
+
+                    <h3 className="text-lg font-bold text-white mb-2 leading-snug group-hover:text-purple-300 transition-colors line-clamp-2">
+                      {art.title}
+                    </h3>
+
+                    <p className="text-slate-300 text-xs leading-relaxed mb-4 line-clamp-3">
+                      {art.description}
+                    </p>
                   </div>
 
-                  <a
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-purple-400 hover:text-purple-300 font-medium transition"
-                  >
-                    Read More
-                    <i className="fas fa-arrow-right ml-2"></i>
-                  </a>
+                  <div className="pt-4 border-t border-slate-800 flex justify-between items-center">
+                    <span className="text-[11px] text-slate-500 font-medium">
+                      Source: {art.source?.name || 'Agri Press'}
+                    </span>
+
+                    <a
+                      href={art.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-purple-400 hover:text-purple-300 font-bold text-xs space-x-1.5"
+                    >
+                      <span>Read Story</span>
+                      <i className="fas fa-external-link-alt text-[10px]"></i>
+                    </a>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
+        )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center space-x-2 mt-12">
+        {/* Pagination Bar */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-2 mt-12">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-slate-900 border border-slate-800 text-white rounded-xl text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-800 transition"
+            >
+              <i className="fas fa-chevron-left mr-1"></i> Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
               <button
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition"
+                key={num}
+                onClick={() => paginate(num)}
+                className={`w-9 h-9 rounded-xl text-xs font-bold transition ${
+                  currentPage === num
+                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
+                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+                }`}
               >
-                <i className="fas fa-chevron-left"></i>
+                {num}
               </button>
+            ))}
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-                <button
-                  key={number}
-                  onClick={() => paginate(number)}
-                  className={`px-4 py-2 rounded-lg transition ${currentPage === number
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-700 text-white hover:bg-slate-600'
-                    }`}
-                >
-                  {number}
-                </button>
-              ))}
-
-              <button
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition"
-              >
-                <i className="fas fa-chevron-right"></i>
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-12 px-4 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400">{articles.length}</div>
-              <div className="text-slate-400">Total Articles</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400">{categories.length - 1}</div>
-              <div className="text-slate-400">Categories</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400">{currentArticles.length}</div>
-              <div className="text-slate-400">Showing</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-amber-400">Live</div>
-              <div className="text-slate-400">Updates</div>
-            </div>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-slate-900 border border-slate-800 text-white rounded-xl text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-800 transition"
+            >
+              Next <i className="fas fa-chevron-right ml-1"></i>
+            </button>
           </div>
-        </div>
+        )}
       </section>
     </div>
   );
