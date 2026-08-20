@@ -116,47 +116,44 @@ const getCropEmoji = (name = '') => {
   return '🌱';
 };
 
-// States currently reporting daily arrival data in the national APMC central portal
-const activeReportingStates = [
-  "Tamil Nadu",
-  "Uttar Pradesh",
+// Complete, alphabetically sorted list of all 36 Indian States & Union Territories
+const indianStates = [
+  "Andaman and Nicobar",
   "Andhra Pradesh",
-  "Punjab",
-  "Haryana",
-  "Maharashtra",
-  "Gujarat",
-  "Rajasthan",
-  "Madhya Pradesh",
-  "Bihar",
-  "Telangana",
-  "Kerala",
-  "Himachal Pradesh",
-  "Odisha",
-  "Uttarakhand",
-  "West Bengal",
-  "Tripura",
-  "Andaman and Nicobar"
-];
-
-// Other states awaiting daily sync from state marketing boards
-const awaitingSyncStates = [
-  "Karnataka",
+  "Arunachal Pradesh",
   "Assam",
+  "Bihar",
+  "Chandigarh",
   "Chhattisgarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
   "Delhi",
   "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
   "Jammu and Kashmir",
   "Jharkhand",
+  "Karnataka",
+  "Kerala",
   "Ladakh",
+  "Lakshadweep",
+  "Madhya Pradesh",
+  "Maharashtra",
   "Manipur",
   "Meghalaya",
   "Mizoram",
   "Nagaland",
+  "Odisha",
   "Puducherry",
+  "Punjab",
+  "Rajasthan",
   "Sikkim",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Lakshadweep"
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal"
 ];
 
 const MandiPrice = () => {
@@ -387,16 +384,9 @@ const MandiPrice = () => {
                   onChange={(e) => setState(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-2.5 text-white focus:ring-2 focus:ring-emerald-500 text-sm font-medium"
                 >
-                  <optgroup label="🟢 States with Live Mandi Data Today">
-                    {activeReportingStates.map((st) => (
-                      <option key={st} value={st}>{st}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="⏳ Awaiting State Board Upload">
-                    {awaitingSyncStates.map((st) => (
-                      <option key={st} value={st}>{st}</option>
-                    ))}
-                  </optgroup>
+                  {indianStates.map((st) => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
                 </select>
               </div>
 
