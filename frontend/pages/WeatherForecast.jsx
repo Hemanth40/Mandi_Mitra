@@ -8,15 +8,30 @@ const WeatherForecast = () => {
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState({ lat: 28.6139, lon: 77.2090, name: 'Delhi NCR' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [searching, setSearching] = useState(false);
 
+  // Key agricultural hubs across India
   const quickCities = [
-    { name: 'Delhi', lat: 28.6139, lon: 77.2090 },
+    { name: 'Delhi NCR', lat: 28.6139, lon: 77.2090 },
     { name: 'Lucknow', lat: 26.8467, lon: 80.9462 },
-    { name: 'Chandigarh', lat: 30.7333, lon: 76.7794 },
+    { name: 'Agra', lat: 27.1767, lon: 78.0081 },
+    { name: 'Ludhiana', lat: 30.9010, lon: 75.8573 },
+    { name: 'Karnal', lat: 29.6857, lon: 76.9905 },
     { name: 'Mumbai', lat: 19.0760, lon: 72.8777 },
-    { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 },
-    { name: 'Hyderabad', lat: 17.3850, lon: 78.4867 },
+    { name: 'Pune', lat: 18.5204, lon: 73.8567 },
+    { name: 'Nashik', lat: 19.9975, lon: 73.7898 },
+    { name: 'Nagpur', lat: 21.1458, lon: 79.0882 },
+    { name: 'Indore', lat: 22.7196, lon: 75.8577 },
+    { name: 'Bhopal', lat: 23.2599, lon: 77.4126 },
+    { name: 'Ahmedabad', lat: 23.0225, lon: 72.5714 },
+    { name: 'Rajkot', lat: 22.3039, lon: 70.8022 },
     { name: 'Jaipur', lat: 26.9124, lon: 75.7873 },
+    { name: 'Bengaluru', lat: 12.9716, lon: 77.5946 },
+    { name: 'Chennai', lat: 13.0827, lon: 80.2707 },
+    { name: 'Coimbatore', lat: 11.0168, lon: 76.9558 },
+    { name: 'Hyderabad', lat: 17.3850, lon: 78.4867 },
+    { name: 'Guntur', lat: 16.3067, lon: 80.4365 },
+    { name: 'Kolkata', lat: 22.5726, lon: 88.3639 },
     { name: 'Patna', lat: 25.5941, lon: 85.1376 },
   ];
 
@@ -65,6 +80,7 @@ const WeatherForecast = () => {
     return descriptions[weatherCode] || 'Partly Cloudy';
   };
 
+  // Safe Geolocation with strict 5-second timeout
   useEffect(() => {
     const getLocation = () => {
       if (!navigator.geolocation) {
@@ -78,45 +94,101 @@ const WeatherForecast = () => {
           setLocation({ lat: latitude, lon: longitude, name: 'Your Location (GPS)' });
           fetchWeather(latitude, longitude, 'Your Location (GPS)');
         },
-        () => {
+        (geoErr) => {
+          console.warn('GPS location declined or timed out, loading default Delhi NCR:', geoErr.message);
           fetchWeather(location.lat, location.lon, 'Delhi NCR');
-        }
+        },
+        { timeout: 5000, maximumAge: 300000 }
       );
     };
 
     getLocation();
   }, []);
 
+  /**
+   * Resilient weather fetch:
+   * 1. Attempts backend API endpoint (/api/weather/current)
+   * 2. If backend is slow, asleep, or fails, immediately falls back to direct Open-Meteo REST API
+   */
   const fetchWeather = async (lat, lon, name = '') => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/weather/current?lat=${lat}&lon=${lon}`);
+      setError(null);
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch weather data: ${response.statusText}`);
+      const rLat = parseFloat(lat).toFixed(2);
+      const rLon = parseFloat(lon).toFixed(2);
+      let data = null;
+
+      // Tier 1: Try Backend endpoint with a 5-second timeout
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const response = await fetch(`${API_BASE_URL}/api/weather/current?lat=${rLat}&lon=${rLon}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (backendErr) {
+        console.warn('Backend weather endpoint unavailable, connecting directly to Open-Meteo radar feed:', backendErr.message);
       }
 
-      const data = await response.json();
+      // Tier 2: Direct Open-Meteo API fallback (free, open CORS, no API key needed)
+      if (!data || !data.current_weather) {
+        const directUrl = `https://api.open-meteo.com/v1/forecast?latitude=${rLat}&longitude=${rLon}&hourly=temperature_2m,precipitation,relativehumidity_2m,windspeed_10m,winddirection_10m,uv_index,windgusts_10m,soil_moisture_0_1cm&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset,uv_index_max&current_weather=true&timezone=auto`;
+        const directRes = await fetch(directUrl);
+        if (!directRes.ok) {
+          throw new Error(`Open-Meteo service responded with status: ${directRes.status}`);
+        }
+        data = await directRes.json();
+      }
+
       setWeatherData(data);
-      if (name) setLocation({ lat, lon, name });
+      if (name) setLocation({ lat: parseFloat(rLat), lon: parseFloat(rLon), name });
       setError(null);
     } catch (err) {
       console.error('Weather fetch error:', err);
-      setError(err.message);
+      setError(`Failed to fetch weather telemetry: ${err.message}. Please check your connection or select another location.`);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLocationSearch = (e) => {
-    e.preventDefault();
-    const query = searchQuery.trim().toLowerCase();
-    const found = quickCities.find(c => c.name.toLowerCase().includes(query));
+  /**
+   * Search location via quick list or Open-Meteo Geocoding API
+   */
+  const handleLocationSearch = async (e) => {
+    if (e) e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    // Quick list match
+    const found = quickCities.find(c => c.name.toLowerCase() === query.toLowerCase());
     if (found) {
       fetchWeather(found.lat, found.lon, found.name);
-    } else {
-      // Default fallback search
-      fetchWeather(28.6139, 77.2090, searchQuery);
+      return;
+    }
+
+    try {
+      setSearching(true);
+      setError(null);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`);
+      const geo = await res.json();
+
+      if (geo.results && geo.results.length > 0) {
+        const item = geo.results[0];
+        const placeName = `${item.name}${item.admin1 ? ', ' + item.admin1 : ''}`;
+        fetchWeather(item.latitude, item.longitude, placeName);
+      } else {
+        setError(`No coordinates found for "${query}". Please check spelling or select from the agricultural hubs below.`);
+      }
+    } catch (err) {
+      console.error('Geocoding search error:', err);
+      setError(`Location search failed: ${err.message}`);
+    } finally {
+      setSearching(false);
     }
   };
 
@@ -145,7 +217,7 @@ const WeatherForecast = () => {
     <div className="min-h-screen bg-[#090d16] text-slate-100 selection:bg-blue-500 selection:text-white">
       <Navigation />
 
-      {/* Hero Section with Dramatic Farmland Skies */}
+      {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden border-b border-slate-800">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -163,12 +235,33 @@ const WeatherForecast = () => {
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">
             Agricultural Weather & 7-Day Forecast
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-6 leading-relaxed">
             Hyper-local GPS weather forecasting, precipitation probabilities, agricultural spraying windows, and soil moisture conditions.
           </p>
 
+          {/* Location Search Bar */}
+          <form onSubmit={handleLocationSearch} className="max-w-md mx-auto mb-6">
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search city, district or mandi (e.g. Pune, Nashik, Agra)..."
+                className="w-full bg-slate-900/90 border border-slate-700 rounded-2xl pl-11 pr-24 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xl"
+              />
+              <i className="fas fa-search absolute left-4 text-slate-400 text-sm"></i>
+              <button
+                type="submit"
+                disabled={searching}
+                className="absolute right-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-md disabled:opacity-50"
+              >
+                {searching ? 'Finding...' : 'Search'}
+              </button>
+            </div>
+          </form>
+
           {/* City Quick Picks */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-2xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
             {quickCities.map((c) => (
               <button
                 key={c.name}
@@ -196,10 +289,17 @@ const WeatherForecast = () => {
         )}
 
         {error && !loading && (
-          <div className="bg-red-950/60 border border-red-800/80 rounded-2xl p-6 text-center max-w-2xl mx-auto">
-            <i className="fas fa-exclamation-triangle text-red-400 text-3xl mb-3"></i>
-            <h3 className="text-lg font-bold text-red-300 mb-1">{error}</h3>
-            <p className="text-slate-400 text-sm">Please select one of the major cities above to reload.</p>
+          <div className="bg-red-950/60 border border-red-800/80 rounded-2xl p-6 text-center max-w-2xl mx-auto mb-8 shadow-xl">
+            <i className="fas fa-exclamation-triangle text-amber-400 text-3xl mb-3"></i>
+            <h3 className="text-lg font-bold text-red-300 mb-2">{error}</h3>
+            <p className="text-slate-400 text-sm mb-4">Please select one of the major agricultural hubs above or retry.</p>
+            <button
+              onClick={() => fetchWeather(location.lat, location.lon, location.name)}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition inline-flex items-center space-x-2"
+            >
+              <i className="fas fa-sync-alt"></i>
+              <span>Retry Telemetry</span>
+            </button>
           </div>
         )}
 
@@ -218,25 +318,22 @@ const WeatherForecast = () => {
                     <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">
                       📍 {location.name}
                     </span>
-                    <div className="text-5xl sm:text-6xl font-black text-white tracking-tighter">
+                    <div className="text-4xl sm:text-5xl font-extrabold text-white my-1 tracking-tight">
                       {Math.round(weatherData.current_weather?.temperature ?? 28)}°C
                     </div>
-                    <p className="text-sm font-semibold text-slate-300 mt-1">
+                    <div className="text-sm font-semibold text-slate-300">
                       {getWeatherDescription(weatherData.current_weather?.weathercode)}
-                    </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Agro-Advisory Window Banner */}
-                <div className="lg:col-span-2 bg-slate-950/80 rounded-2xl p-5 border border-slate-800/80 flex flex-col justify-between">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">🚜 Agricultural Action Advisory</span>
-                      <h4 className={`text-lg font-extrabold ${getSprayingAdvisory().color} mt-0.5`}>
-                        {getSprayingAdvisory().status}
-                      </h4>
-                    </div>
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getSprayingAdvisory().bg} ${getSprayingAdvisory().color} border-current`}>
+                {/* Spray Window Status */}
+                <div className="lg:col-span-2 bg-slate-950/60 p-6 rounded-2xl border border-slate-800">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${getSprayingAdvisory().bg} ${getSprayingAdvisory().color}`}>
+                      {getSprayingAdvisory().status}
+                    </span>
+                    <span className="text-xs text-slate-400">
                       Farm Spray Advisory
                     </span>
                   </div>

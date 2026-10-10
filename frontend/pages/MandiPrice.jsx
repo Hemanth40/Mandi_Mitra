@@ -168,21 +168,25 @@ const MandiPrice = () => {
   const [priceUnit, setPriceUnit] = useState('quintal'); // 'quintal' (100kg) or 'kg' (1kg)
   const [showPriceGuide, setShowPriceGuide] = useState(false);
 
-  useEffect(() => {
-    const fetchPrices = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/commodity/prices?state=${encodeURIComponent(state)}`);
-        setPrices(response.data);
-        setDistrict(''); // Reset district when state changes
-      } catch (err) {
-        setError('Failed to fetch commodity prices. Please check connection or try another state.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchPrices = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/commodity/prices?state=${encodeURIComponent(state)}`, {
+        timeout: 20000
+      });
+      setPrices(response.data || []);
+      setDistrict(''); // Reset district when state changes
+    } catch (err) {
+      console.error('Commodity API fetch error:', err);
+      const errMsg = err.response?.data?.error || err.response?.data?.details || err.message || 'Failed to fetch commodity prices.';
+      setError(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPrices();
   }, [state]);
 
@@ -446,10 +450,43 @@ const MandiPrice = () => {
           )}
 
           {error && !loading && (
-            <div className="text-center py-16 bg-red-950/40 border border-red-800/60 rounded-2xl p-6">
-              <i className="fas fa-exclamation-triangle text-red-400 text-3xl mb-3"></i>
-              <h3 className="text-lg font-bold text-red-300 mb-1">{error}</h3>
-              <p className="text-slate-400 text-sm">Please try switching to another state like "Uttar Pradesh" or "Tamil Nadu".</p>
+            <div className="text-center py-12 px-6 bg-red-950/40 border border-red-800/60 rounded-3xl max-w-2xl mx-auto p-6 shadow-2xl">
+              <i className="fas fa-exclamation-triangle text-amber-400 text-3xl mb-3"></i>
+              <h3 className="text-lg font-bold text-red-200 mb-2">{error}</h3>
+              <p className="text-slate-300 text-xs max-w-lg mx-auto mb-6 leading-relaxed">
+                Queries are transmitted directly to the central National Data Portal (data.gov.in) with your authenticated API key. If the central government portal is slow, experiencing network timeouts, or undergoing server maintenance, please click retry below.
+              </p>
+
+              <div className="flex flex-wrap justify-center items-center gap-3 mb-6">
+                <button
+                  onClick={fetchPrices}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs flex items-center space-x-2 transition shadow-lg shadow-emerald-600/30"
+                >
+                  <i className="fas fa-sync-alt"></i>
+                  <span>Retry Fetching {state}</span>
+                </button>
+              </div>
+
+              <div className="border-t border-red-900/40 pt-4 text-left">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2 text-center">
+                  Or Test Another State APMC:
+                </span>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {['Uttar Pradesh', 'Tamil Nadu', 'Maharashtra', 'Gujarat', 'Punjab', 'Madhya Pradesh', 'Karnataka'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setState(st)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
+                        state === st
+                          ? 'bg-emerald-600 text-white border-emerald-500'
+                          : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700'
+                      }`}
+                    >
+                      📍 {st}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

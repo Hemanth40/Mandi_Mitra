@@ -44,7 +44,13 @@ router.get('/current', validateCoordinates, async (req, res) => {
 
   try {
     console.log('Fetching weather data...');
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) MandiMitra/1.0',
+        'Accept': 'application/json'
+      }
+    });
     console.log('Weather API response status:', response.status);
 
     const data = response.data;
@@ -59,8 +65,12 @@ router.get('/current', validateCoordinates, async (req, res) => {
 
     res.json(data);
   } catch (error) {
-    console.error('Weather API Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Weather API Error:', error.message);
+    res.status(502).json({
+      error: 'Failed to fetch weather telemetry from Open-Meteo',
+      details: error.message,
+      status: error.response?.status || 'Network Error'
+    });
   }
 });
 
