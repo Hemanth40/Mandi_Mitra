@@ -32,39 +32,60 @@ const STATE_ALIASES = {
 /**
  * Fetch commodity data directly using the user's API key with automatic retry
  */
-async function fetchFromGovApi(state, offset = 0, limit = 1000) {
+async function fetchFromGovApi(state, offset = 0, limit = 500) {
   const httpsAgent = new https.Agent({ rejectUnauthorized: false, keepAlive: true });
-  const params = {
-    'api-key': API_KEY,
-    offset,
-    limit,
-    format: 'json',
-    'filters[state]': state,
-  };
 
-  const config = {
-    params,
-    headers: REQUEST_HEADERS,
-    httpsAgent,
-    timeout: 15000,
-  };
-
-  let lastError = null;
-  // Try up to 2 attempts
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    try {
-      console.log(`[Commodity API] Attempt ${attempt} querying ${EXTERNAL_API_URL} for state: ${state}`);
-      const response = await axios.get(EXTERNAL_API_URL, config);
+  // Strategy 1: State filter query with limit 500
+  try {
+    const config = {
+      params: {
+        'api-key': API_KEY,
+        offset,
+        limit,
+        format: 'json',
+        'filters[state]': state,
+      },
+      headers: REQUEST_HEADERS,
+      httpsAgent,
+      timeout: 8000,
+    };
+    console.log(`[Commodity API] Direct filter query on ${EXTERNAL_API_URL} for state: ${state}`);
+    const response = await axios.get(EXTERNAL_API_URL, config);
+    if (response.data && response.data.records && response.data.records.length > 0) {
       return response.data;
-    } catch (err) {
-      lastError = err;
-      console.warn(`[Commodity API] Attempt ${attempt} error: ${err.message}`);
-      if (attempt < 2) {
-        await new Promise((r) => setTimeout(r, 1000));
-      }
     }
+  } catch (err) {
+    console.warn(`[Commodity API] Direct state query failed: ${err.message}. Trying batch scan...`);
   }
-  throw lastError;
+
+  // Strategy 2: Batch scan without state filter (bypasses unindexed query slowdown on data.gov.in)
+  try {
+    const batchConfig = {
+      params: {
+        'api-key': API_KEY,
+        offset: 0,
+        limit: 1000,
+        format: 'json'
+      },
+      headers: REQUEST_HEADERS,
+      httpsAgent,
+      timeout: 10000
+    };
+    console.log(`[Commodity API] Running live batch scan on ${EXTERNAL_API_URL}...`);
+    const batchRes = await axios.get(EXTERNAL_API_URL, batchConfig);
+    const norm = state.toLowerCase().trim();
+    const matched = (batchRes.data?.records || []).filter(r => {
+      const s = (r.state || '').toLowerCase().trim();
+      return s === norm || (norm === 'kerala' && s === 'keralam');
+    });
+    return {
+      records: matched,
+      total: matched.length
+    };
+  } catch (batchErr) {
+    console.error(`[Commodity API] Batch scan error: ${batchErr.message}`);
+    throw batchErr;
+  }
 }
 
 router.get('/prices', async (req, res) => {

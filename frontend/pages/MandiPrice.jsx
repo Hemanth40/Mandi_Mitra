@@ -3,6 +3,9 @@ import axios from 'axios';
 import Navigation from '../src/components/Navigation';
 import { API_BASE_URL } from '../src/config';
 
+const COMMODITY_API_URL = 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070';
+const COMMODITY_API_KEY = '579b464db66ec23bdd000001bb22ecdc4a6f4f195e0e5b1846f47e06';
+
 // Comprehensive Crop Emoji Dictionary with Fuzzy Match Fallback
 const cropEmojiMap = {
   tomato: '🍅',
@@ -171,19 +174,78 @@ const MandiPrice = () => {
   const fetchPrices = async () => {
     setLoading(true);
     setError(null);
+    let records = null;
+
+    // 1. Direct fetch from official data.gov.in using user's API key
+    // This connects directly from the user's browser in India, bypassing foreign cloud IP blocking!
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/commodity/prices?state=${encodeURIComponent(state)}`, {
-        timeout: 20000
+      const directRes = await axios.get(COMMODITY_API_URL, {
+        params: {
+          'api-key': COMMODITY_API_KEY,
+          format: 'json',
+          offset: 0,
+          limit: 500,
+          'filters[state]': state
+        },
+        timeout: 8000
       });
-      setPrices(response.data || []);
-      setDistrict(''); // Reset district when state changes
-    } catch (err) {
-      console.error('Commodity API fetch error:', err);
-      const errMsg = err.response?.data?.error || err.response?.data?.details || err.message || 'Failed to fetch commodity prices.';
-      setError(errMsg);
-    } finally {
-      setLoading(false);
+      if (directRes.data && Array.isArray(directRes.data.records) && directRes.data.records.length > 0) {
+        records = directRes.data.records;
+      }
+    } catch (directErr) {
+      console.warn('Direct state query failed or timed out:', directErr.message);
     }
+
+    // 2. Direct batch scan (bypasses unindexed state queries on data.gov.in)
+    if (!records) {
+      try {
+        const batchRes = await axios.get(COMMODITY_API_URL, {
+          params: {
+            'api-key': COMMODITY_API_KEY,
+            format: 'json',
+            offset: 0,
+            limit: 1000
+          },
+          timeout: 10000
+        });
+        const norm = state.toLowerCase().trim();
+        const matches = (batchRes.data?.records || []).filter(r => {
+          const s = (r.state || '').toLowerCase().trim();
+          return s === norm || (norm === 'kerala' && s === 'keralam');
+        });
+        if (matches.length > 0) {
+          records = matches;
+        }
+      } catch (batchErr) {
+        console.warn('Direct batch scan failed:', batchErr.message);
+      }
+    }
+
+    // 3. Fallback to Backend proxy
+    if (!records) {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/commodity/prices?state=${encodeURIComponent(state)}`, {
+          timeout: 15000
+        });
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          records = response.data;
+        }
+      } catch (backendErr) {
+        console.error('Backend proxy fetch also failed:', backendErr.message);
+        const errMsg = backendErr.response?.data?.error || backendErr.response?.data?.details || backendErr.message || 'Failed to fetch commodity prices.';
+        setError(errMsg);
+      }
+    }
+
+    if (records) {
+      setPrices(records);
+      setDistrict('');
+      setError(null);
+    } else if (!records && !error) {
+      setPrices([]);
+      setDistrict('');
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
